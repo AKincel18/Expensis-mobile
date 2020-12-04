@@ -1,8 +1,10 @@
-package pl.polsl.expensis_mobile
+package pl.polsl.expensis_mobile.activities
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
+import pl.polsl.expensis_mobile.R
 
 class LoginActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -11,5 +13,6 @@ class LoginActivity : AppCompatActivity() {
     }
 
     fun onRegisterClicked(view: View) {
+        startActivity(Intent(this, RegisterActivity::class.java))
     }
 }

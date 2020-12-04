@@ -2,8 +2,31 @@
     <string name="app_name">Expensis-mobile</string>
     <string name="email">Email</string>
     <string name="password">Password</string>
+    <string name="confirm_password">Confirm password</string>
     <string name="primaryColor">#</string>
     <string name="login">Login</string>
     <string name="register_now">Register now!</string>
     <string name="expensis">Expensis</string>
+    <string name="register">Register</string>
+    <string name="login_link">Have an account? Log in!</string>
+    <string name="gender">Gender</string>
+    <string name="date">Date</string>
+    <string name="monthly_limit">Monthly limit</string>
+    <string name="gender_hint">Select gender</string>
+    <string name="income_range_hint">Select income range</string>
+
+
+    <string-array name="gender_array">
+        <item>Female</item>
+        <item>Male</item>
+    </string-array>
+
+    <!--todo get from database-->
+    <string-array name="income_range_array">
+        <item>0–500</item>
+        <item>500–1000</item>
+        <item>1000–1500</item>
+        <item>1500–2000</item>
+        <item>2000–2500</item>
+    </string-array>
 </resources>
