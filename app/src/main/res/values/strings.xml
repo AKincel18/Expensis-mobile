@@ -10,7 +10,7 @@
     <string name="register">Register</string>
     <string name="login_link">Have an account? Log in!</string>
     <string name="gender">Gender</string>
-    <string name="date">Date</string>
+    <string name="date">Date of birth</string>
     <string name="monthly_limit">Monthly limit</string>
     <string name="gender_hint">Select gender</string>
     <string name="income_range_hint">Select income range</string>
