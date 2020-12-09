@@ -1,6 +1,8 @@
 package pl.polsl.expensis_mobile.utils
 
-import java.util.*
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+import java.time.format.DateTimeParseException
 
 class Utils {
     companion object {
@@ -11,10 +13,10 @@ class Utils {
             return "$dayString/$monthString/$year"
         }
 
-        fun dateToCalendar(date: Date): Calendar {
-            return Calendar.getInstance().also {
-                it.timeInMillis = date.time
-            }
+        @Throws(DateTimeParseException::class)
+        fun stringToLocalDate(date: String): LocalDate {
+            val formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
+            return LocalDate.parse(date, formatter)
         }
     }
 }
