@@ -1,6 +1,5 @@
 package pl.polsl.expensis_mobile.activities
 
-import android.annotation.SuppressLint
 import android.app.DatePickerDialog
 import android.app.DatePickerDialog.OnDateSetListener
 import android.content.Intent
@@ -31,7 +30,7 @@ import pl.polsl.expensis_mobile.validators.UserValidator
 import java.time.LocalDate
 import java.util.*
 
-@SuppressLint("NewApi")
+
 class RegisterActivity : AppCompatActivity() {
 
     private var incomeRanges: List<IncomeRange> = listOf()

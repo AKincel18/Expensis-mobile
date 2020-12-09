@@ -1,10 +1,8 @@
 package pl.polsl.expensis_mobile.models
 
-import android.annotation.SuppressLint
 import com.google.gson.annotations.SerializedName
 import java.time.LocalDate
 
-@SuppressLint("NewApi")
 class User {
     @SerializedName("email")
     var email: String = ""

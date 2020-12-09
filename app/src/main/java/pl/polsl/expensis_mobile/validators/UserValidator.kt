@@ -1,6 +1,5 @@
 package pl.polsl.expensis_mobile.validators
 
-import android.annotation.SuppressLint
 import android.widget.EditText
 import android.widget.Spinner
 import android.widget.TextView
@@ -16,7 +15,6 @@ import pl.polsl.expensis_mobile.utils.Messages.Companion.WRONG_DATE_ERROR
 import pl.polsl.expensis_mobile.utils.Messages.Companion.WRONG_EMAIL_ERROR
 import pl.polsl.expensis_mobile.utils.Messages.Companion.WRONG_MONTHLY_LIMIT_ERROR
 import pl.polsl.expensis_mobile.utils.Utils
-import java.lang.NumberFormatException
 import java.text.DateFormat
 import java.text.ParseException
 import java.text.SimpleDateFormat
@@ -24,7 +22,6 @@ import java.time.LocalDate
 import java.util.*
 import java.util.regex.Pattern
 
-@SuppressLint("NewApi")
 class UserValidator(
         private val emailInput: EditText,
         private val genderSpinner: Spinner,
