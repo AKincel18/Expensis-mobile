@@ -13,6 +13,7 @@
     <string name="date">Date of birth</string>
     <string name="monthly_limit">Monthly limit</string>
     <string name="gender_hint">Select gender</string>
+    <string name="required_field_sign">*</string>
 
     <string-array name="gender_array">
         <item>Female</item>

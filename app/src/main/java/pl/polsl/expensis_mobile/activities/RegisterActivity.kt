@@ -114,6 +114,8 @@ class RegisterActivity : AppCompatActivity() {
                 dateNow.get(Calendar.DAY_OF_MONTH)
 
             )
+
+            dialog.datePicker.maxDate = dateNow.timeInMillis
             dialog.show()
         }
 

@@ -7,6 +7,7 @@
     android:background="@drawable/background_gradient"
     tools:context=".activities.RegisterActivity">
 
+
     <Button
         android:id="@+id/registerButton"
         android:layout_width="290dp"
@@ -17,6 +18,7 @@
         app:layout_constraintEnd_toEndOf="@+id/passwordConfirmInput"
         app:layout_constraintStart_toStartOf="@+id/passwordConfirmInput"
         app:layout_constraintTop_toBottomOf="@+id/passwordConfirmInput" />
+
 
     <EditText
         android:id="@+id/emailInput"
@@ -34,6 +36,19 @@
         app:layout_constraintTop_toBottomOf="@+id/registerTitle"
         app:layout_constraintVertical_bias="0.07" />
 
+    <TextView
+        android:id="@+id/emailRequiredTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="144dp"
+        android:layout_marginEnd="8dp"
+        android:text="@string/required_field_sign"
+        android:textSize="20sp"
+        app:layout_constraintEnd_toStartOf="@+id/emailInput"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <EditText
         android:id="@+id/passwordInput"
         android:layout_width="wrap_content"
@@ -49,6 +64,18 @@
         app:layout_constraintStart_toStartOf="@+id/incomeRangeSpinner"
         app:layout_constraintTop_toBottomOf="@+id/incomeRangeSpinner" />
 
+    <TextView
+        android:id="@+id/passwordRequiredTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
+        android:text="@string/required_field_sign"
+        android:textSize="20sp"
+        app:layout_constraintEnd_toStartOf="@+id/passwordInput"
+        app:layout_constraintHorizontal_bias="0.924"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/incomeRangeRequiredTextView" />
+
     <EditText
         android:id="@+id/passwordConfirmInput"
         android:layout_width="wrap_content"
@@ -63,6 +90,18 @@
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="@+id/passwordInput"
         app:layout_constraintTop_toBottomOf="@+id/passwordInput" />
+
+    <TextView
+        android:id="@+id/passwordConfirmRequiredTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="40dp"
+        android:text="@string/required_field_sign"
+        android:textSize="20sp"
+        app:layout_constraintEnd_toStartOf="@+id/passwordConfirmInput"
+        app:layout_constraintHorizontal_bias="0.924"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/passwordRequiredTextView" />
 
     <EditText
         android:id="@+id/monthlyLimitInput"
@@ -91,6 +130,19 @@
         app:layout_constraintStart_toStartOf="@+id/emailInput"
         app:layout_constraintTop_toBottomOf="@+id/emailInput" />
 
+    <TextView
+        android:id="@+id/genderRequiredTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="8dp"
+        android:text="@string/required_field_sign"
+        android:textSize="20sp"
+        app:layout_constraintEnd_toStartOf="@+id/genderSpinner"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/emailRequiredTextView" />
+
     <Spinner
         android:id="@+id/incomeRangeSpinner"
         android:layout_width="212dp"
@@ -103,6 +155,19 @@
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="@+id/monthlyLimitInput"
         app:layout_constraintTop_toBottomOf="@+id/monthlyLimitInput" />
+
+    <TextView
+        android:id="@+id/incomeRangeRequiredTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="90dp"
+        android:text="@string/required_field_sign"
+        android:textSize="20sp"
+        app:layout_constraintEnd_toStartOf="@+id/incomeRangeSpinner"
+        app:layout_constraintHorizontal_bias="0.924"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/passwordRequiredTextView"
+        app:layout_constraintTop_toBottomOf="@+id/dateOfBirthRequiredTextView" />
 
     <TextView
         android:id="@+id/LoginLinkText"
@@ -148,10 +213,25 @@
         app:layout_constraintStart_toStartOf="@+id/genderSpinner"
         app:layout_constraintTop_toBottomOf="@+id/genderSpinner" />
 
+
+    <TextView
+        android:id="@+id/dateOfBirthRequiredTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
+        android:text="@string/required_field_sign"
+        android:textSize="20sp"
+        app:layout_constraintEnd_toStartOf="@+id/dateInput"
+        app:layout_constraintHorizontal_bias="0.924"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/genderRequiredTextView" />
+
     <androidx.constraintlayout.widget.Group
         android:id="@+id/group"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
+
+
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
