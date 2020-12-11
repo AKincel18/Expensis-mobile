@@ -15,6 +15,6 @@ class IncomeRange(
         return if (id != 0)
             "$rangeFrom-$rangeTo"
         else
-            "Select income range"
+            "Select income range*"
     }
 }
