@@ -59,7 +59,8 @@ class UserValidator {
     @Throws(NumberFormatException::class)
     private fun validateMonthlyLimit() {
         val monthlyLimit = userDTO.monthlyLimitInput.text.toString()
-        monthlyLimit.toDouble()
+        if (monthlyLimit.isNotEmpty())
+            monthlyLimit.toDouble()
     }
 
     @Throws(MyException::class)

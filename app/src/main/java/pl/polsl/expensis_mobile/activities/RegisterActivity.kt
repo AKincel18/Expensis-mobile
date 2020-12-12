@@ -130,9 +130,9 @@ class RegisterActivity : AppCompatActivity() {
             )
 
             val userValidator = UserValidator()
-            val validationResult = userValidator.validate(userFormDTO);
+            val validationResult = userValidator.validate(userFormDTO)
             if (validationResult.isValid) {
-                val user = User(userFormDTO);
+                val user = User(userFormDTO)
                 val userJson = createJsonBuilder().toJson(user)
                 println(userJson)
                 val url = BASE_URL + Endpoint.USERS
