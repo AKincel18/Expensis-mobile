@@ -15,4 +15,8 @@ class LoginActivity : AppCompatActivity() {
     fun onRegisterClicked(view: View) {
         startActivity(Intent(this, RegisterActivity::class.java))
     }
+
+    fun onLoginClicked(view: View) {
+        startActivity(Intent(this, MenuActivity::class.java))
+    }
 }

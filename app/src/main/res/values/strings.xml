@@ -14,6 +14,9 @@
     <string name="monthly_limit">Monthly limit</string>
     <string name="gender_hint">Select gender*</string>
     <string name="required_field_sign">*</string>
+    <string name="expenses">Expenses</string>
+    <string name="graphs">Graphs</string>
+    <string name="profile">Profile</string>
 
     <string-array name="gender_array">
         <item>Female</item>
