@@ -15,7 +15,6 @@ import com.google.gson.reflect.TypeToken
 import kotlinx.android.synthetic.main.register_activity.*
 import org.json.JSONObject
 import pl.polsl.expensis_mobile.R
-import pl.polsl.expensis_mobile.adapters.LocalDateTypeAdapter
 import pl.polsl.expensis_mobile.adapters.SpinnerAdapter
 import pl.polsl.expensis_mobile.dto.UserFormDTO
 import pl.polsl.expensis_mobile.models.IncomeRange
@@ -23,9 +22,9 @@ import pl.polsl.expensis_mobile.models.User
 import pl.polsl.expensis_mobile.rest.BASE_URL
 import pl.polsl.expensis_mobile.rest.Endpoint
 import pl.polsl.expensis_mobile.rest.VolleySingleton
+import pl.polsl.expensis_mobile.utils.Utils.Companion.createUserJsonBuilder
 import pl.polsl.expensis_mobile.utils.Utils.Companion.parseDateToString
 import pl.polsl.expensis_mobile.validators.UserValidator
-import java.time.LocalDate
 import java.util.*
 
 
@@ -42,6 +41,7 @@ class RegisterActivity : AppCompatActivity() {
 
     }
 
+
     private fun fetchIncomeRanges() {
 
         val url = BASE_URL + Endpoint.INCOME_RANGES
@@ -54,7 +54,6 @@ class RegisterActivity : AppCompatActivity() {
 
                 val type = object : TypeToken<List<IncomeRange>>() {}.type
                 val incomeRanges = Gson().fromJson<List<IncomeRange>>(response.toString(), type)
-
                 fillIncomeRangeSpinner(incomeRanges)
 
                 println(incomeRanges.toString())
@@ -133,7 +132,7 @@ class RegisterActivity : AppCompatActivity() {
             val validationResult = userValidator.validate(userFormDTO)
             if (validationResult.isValid) {
                 val user = User(userFormDTO)
-                val userJson = createJsonBuilder().toJson(user)
+                val userJson = createUserJsonBuilder().toJson(user)
                 println(userJson)
                 val url = BASE_URL + Endpoint.USERS
                 val userJsonObject = JSONObject(userJson)
@@ -153,13 +152,6 @@ class RegisterActivity : AppCompatActivity() {
 
             Toast.makeText(this, validationResult.message, Toast.LENGTH_SHORT).show()
         }
-    }
-
-    private fun createJsonBuilder(): Gson {
-        return Gson()
-            .newBuilder()
-            .registerTypeAdapter(LocalDate::class.java, LocalDateTypeAdapter().nullSafe())
-            .create()
     }
 
     fun onLoginClicked(view: View) {
