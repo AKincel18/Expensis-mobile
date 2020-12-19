@@ -13,19 +13,17 @@ import com.android.volley.toolbox.JsonObjectRequest
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import kotlinx.android.synthetic.main.register_activity.*
+import org.json.JSONArray
 import org.json.JSONObject
 import pl.polsl.expensis_mobile.R
 import pl.polsl.expensis_mobile.adapters.SpinnerAdapter
 import pl.polsl.expensis_mobile.dto.UserFormDTO
 import pl.polsl.expensis_mobile.models.IncomeRange
 import pl.polsl.expensis_mobile.models.User
-import pl.polsl.expensis_mobile.rest.BASE_URL
-import pl.polsl.expensis_mobile.rest.Endpoint
-import pl.polsl.expensis_mobile.rest.VolleySingleton
+import pl.polsl.expensis_mobile.rest.*
 import pl.polsl.expensis_mobile.utils.IntentKeys
 import pl.polsl.expensis_mobile.utils.Utils.Companion.createUserJsonBuilder
 import pl.polsl.expensis_mobile.utils.Utils.Companion.parseDateToString
-import pl.polsl.expensis_mobile.rest.ServerErrorResponse
 import pl.polsl.expensis_mobile.validators.UserValidator
 import java.util.*
 
@@ -33,18 +31,23 @@ import java.util.*
 class RegisterActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        fetchIncomeRanges()
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.register_activity)
-
-        fillGenderSpinner()
-        pickDateListener()
-        registerUser()
+        fetchIncomeRanges(object: ServerCallback {
+            override fun onSuccess(result: JSONArray?) {
+                setContentView(R.layout.register_activity)
+                val type = object : TypeToken<List<IncomeRange>>() {}.type
+                val incomeRanges = Gson().fromJson<List<IncomeRange>>(result.toString(), type)
+                fillIncomeRangeSpinner(incomeRanges)
+                fillGenderSpinner()
+                pickDateListener()
+                registerUser()
+            }
+        })
 
     }
 
 
-    private fun fetchIncomeRanges() {
+    private fun fetchIncomeRanges(callback: ServerCallback) {
 
         val url = BASE_URL + Endpoint.INCOME_RANGES
         val objectRequest = JsonArrayRequest(
@@ -52,13 +55,7 @@ class RegisterActivity : AppCompatActivity() {
             url,
             null,
             { response ->
-                println("Rest response = $response")
-
-                val type = object : TypeToken<List<IncomeRange>>() {}.type
-                val incomeRanges = Gson().fromJson<List<IncomeRange>>(response.toString(), type)
-                fillIncomeRangeSpinner(incomeRanges)
-
-                println(incomeRanges.toString())
+                callback.onSuccess(response)
             },
             { error ->
                 println("error! $error")
