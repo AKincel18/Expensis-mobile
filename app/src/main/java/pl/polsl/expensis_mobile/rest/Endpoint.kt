@@ -6,5 +6,6 @@ class Endpoint {
         const val INCOME_RANGES = "income-ranges/"
         const val USERS = "users/"
         const val AUTH = "auth/"
+        const val REFRESH = "refresh/"
     }
 }

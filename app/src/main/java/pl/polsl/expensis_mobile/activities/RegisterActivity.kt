@@ -142,6 +142,7 @@ class RegisterActivity : AppCompatActivity() {
                     userJsonObject,
                     { response ->
                         println("Rest response = $response")
+                        startActivity(Intent(this, LoginActivity::class.java))
                     },
                     { error ->
                         println("error! $error")
@@ -149,7 +150,6 @@ class RegisterActivity : AppCompatActivity() {
                 )
                 VolleySingleton.getInstance(this).addToRequestQueue(objectRequest)
             }
-
             Toast.makeText(this, validationResult.message, Toast.LENGTH_SHORT).show()
         }
     }
