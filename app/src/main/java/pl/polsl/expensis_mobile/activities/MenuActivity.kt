@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import pl.polsl.expensis_mobile.R
+import pl.polsl.expensis_mobile.utils.SharedPreferencesUtils.Companion.clearAllSharedPreferences
 
 class MenuActivity : AppCompatActivity() {
 
@@ -26,6 +27,7 @@ class MenuActivity : AppCompatActivity() {
     }
 
     fun onLogoutClicked(view: View) {
+        clearAllSharedPreferences()
         startActivity(Intent(this, LoginActivity::class.java))
     }
 }

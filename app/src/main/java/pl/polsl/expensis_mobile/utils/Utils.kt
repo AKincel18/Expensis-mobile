@@ -1,5 +1,7 @@
 package pl.polsl.expensis_mobile.utils
 
+import com.google.gson.Gson
+import pl.polsl.expensis_mobile.adapters.LocalDateTypeAdapter
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeParseException
@@ -17,6 +19,13 @@ class Utils {
         fun stringToLocalDate(date: String): LocalDate {
             val formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
             return LocalDate.parse(date, formatter)
+        }
+
+        fun createUserJsonBuilder(): Gson {
+            return Gson()
+                    .newBuilder()
+                    .registerTypeAdapter(LocalDate::class.java, LocalDateTypeAdapter().nullSafe())
+                    .create()
         }
     }
 }

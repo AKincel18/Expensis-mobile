@@ -2,6 +2,9 @@ package pl.polsl.expensis_mobile.utils
 
 class Messages {
     companion object {
+        /**
+         * Register view
+         */
         const val WRONG_DATE_ERROR = "Date of birth is not valid"
         const val WRONG_MONTHLY_LIMIT_ERROR = "Monthly limit is not valid"
         const val WRONG_EMAIL_ERROR = "Email is not valid"
@@ -11,5 +14,12 @@ class Messages {
                 " 5 characters, 1 digit and 1 special sign (e.g !%#)"
         const val NOT_EQUAL_PASSWORDS_ERROR = "Passwords are not equal"
         const val SUCCESSFULLY_REGISTERED = "Successfully registered"
+
+        /**
+         * Login view
+         */
+        const val EMPTY_EMAIL = "Email cannot be empty"
+        const val EMPTY_PASSWORD = "Password cannot be empty"
+        const val INVALID_EMAIL_OR_PASSWORD = "Invalid email or password"
     }
 }
