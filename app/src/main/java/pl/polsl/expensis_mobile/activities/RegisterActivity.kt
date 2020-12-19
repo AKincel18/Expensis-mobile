@@ -22,8 +22,10 @@ import pl.polsl.expensis_mobile.models.User
 import pl.polsl.expensis_mobile.rest.BASE_URL
 import pl.polsl.expensis_mobile.rest.Endpoint
 import pl.polsl.expensis_mobile.rest.VolleySingleton
+import pl.polsl.expensis_mobile.utils.IntentKeys
 import pl.polsl.expensis_mobile.utils.Utils.Companion.createUserJsonBuilder
 import pl.polsl.expensis_mobile.utils.Utils.Companion.parseDateToString
+import pl.polsl.expensis_mobile.rest.ServerErrorResponse
 import pl.polsl.expensis_mobile.validators.UserValidator
 import java.util.*
 
@@ -142,15 +144,23 @@ class RegisterActivity : AppCompatActivity() {
                     userJsonObject,
                     { response ->
                         println("Rest response = $response")
-                        startActivity(Intent(this, LoginActivity::class.java))
+                        val intent = Intent(applicationContext, LoginActivity::class.java)
+                        intent.putExtra(IntentKeys.REGISTERED, validationResult.message)
+                        startActivity(intent)
                     },
                     { error ->
                         println("error! $error")
+                        val serverResponse = ServerErrorResponse(error)
+                        val messageError = serverResponse.getErrorResponse()
+                        if (messageError != null)
+                            Toast.makeText(this, messageError, Toast.LENGTH_SHORT).show()
                     }
                 )
                 VolleySingleton.getInstance(this).addToRequestQueue(objectRequest)
+            } else {
+                Toast.makeText(this, validationResult.message, Toast.LENGTH_SHORT).show()
             }
-            Toast.makeText(this, validationResult.message, Toast.LENGTH_SHORT).show()
+
         }
     }
 

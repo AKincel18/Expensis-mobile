@@ -17,6 +17,7 @@ import pl.polsl.expensis_mobile.others.LoggedUser
 import pl.polsl.expensis_mobile.rest.BASE_URL
 import pl.polsl.expensis_mobile.rest.Endpoint
 import pl.polsl.expensis_mobile.rest.VolleySingleton
+import pl.polsl.expensis_mobile.utils.IntentKeys
 import pl.polsl.expensis_mobile.utils.Messages
 import pl.polsl.expensis_mobile.utils.SharedPreferencesUtils
 import pl.polsl.expensis_mobile.utils.SharedPreferencesUtils.Companion.accessTokenConst
@@ -40,6 +41,11 @@ class LoginActivity : AppCompatActivity() {
             startActivity(Intent(this, MenuActivity::class.java))
         } else {
             setContentView(R.layout.login_activity)
+            val intent: Intent = intent
+            intent.extras
+            if (intent.hasExtra(IntentKeys.REGISTERED)) {
+                Toast.makeText(this, intent.getStringExtra(IntentKeys.REGISTERED), Toast.LENGTH_SHORT).show()
+            }
         }
     }
 
