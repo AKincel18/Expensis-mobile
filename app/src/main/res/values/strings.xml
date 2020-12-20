@@ -12,7 +12,7 @@
     <string name="gender">Gender</string>
     <string name="date">Date of birth*</string>
     <string name="monthly_limit">Monthly limit</string>
-    <string name="gender_hint">Select gender*</string>
+    <string name="gender_hint">Gender*</string>
     <string name="required_field_sign">*</string>
     <string name="expenses">Expenses</string>
     <string name="graphs">Graphs</string>

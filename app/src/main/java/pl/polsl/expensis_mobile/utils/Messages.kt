@@ -14,6 +14,7 @@ class Messages {
                 " 5 characters, 1 digit and 1 special sign (e.g !%#)"
         const val NOT_EQUAL_PASSWORDS_ERROR = "Passwords are not equal"
         const val SUCCESSFULLY_REGISTERED = "Successfully registered"
+        const val UNEXPECTED_ERROR = "Unexpected error"
 
         /**
          * Login view
