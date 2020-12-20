@@ -2,13 +2,11 @@ package pl.polsl.expensis_mobile.utils
 
 import android.content.Context
 import com.android.volley.Request
-import com.android.volley.toolbox.JsonObjectRequest
+import com.android.volley.VolleyError
 import com.google.gson.Gson
 import org.json.JSONObject
 import pl.polsl.expensis_mobile.dto.RefreshTokenDTO
-import pl.polsl.expensis_mobile.rest.BASE_URL
-import pl.polsl.expensis_mobile.rest.Endpoint
-import pl.polsl.expensis_mobile.rest.VolleySingleton
+import pl.polsl.expensis_mobile.rest.*
 import pl.polsl.expensis_mobile.utils.SharedPreferencesUtils.Companion.accessTokenConst
 import pl.polsl.expensis_mobile.utils.SharedPreferencesUtils.Companion.clearAllSharedPreferences
 import pl.polsl.expensis_mobile.utils.SharedPreferencesUtils.Companion.getRefreshToken
@@ -18,29 +16,31 @@ class TokenUtils {
     companion object {
 
         private lateinit var context: Context
-
+        private lateinit var refreshToken: String
         fun setContext(con: Context) {
             context = con
         }
 
-        fun refreshToken() {
-            val refreshToken = getRefreshToken() ?: return
+        private fun refreshToken(callback: ServerCallback<JSONObject>) {
+            refreshToken = getRefreshToken() ?: return
             val url = BASE_URL + Endpoint.REFRESH
             val refreshTokenJsonObject = JSONObject(Gson().toJson(RefreshTokenDTO(refreshToken)))
+            val volleyService = VolleyService(context, callback)
+            volleyService.requestObject(Request.Method.POST, url, refreshTokenJsonObject)
+        }
 
-            val objectRequest = JsonObjectRequest(
-                Request.Method.POST,
-                url,
-                refreshTokenJsonObject,
-                { response ->
+        fun refreshTokenCallback() {
+            refreshToken(object: ServerCallback<JSONObject> {
+                override fun onSuccess(response: JSONObject) {
                     storeTokens(response.get(accessTokenConst) as String, refreshToken)
-                },
-                { error ->
+                }
+
+                override fun onFailure(error: VolleyError) {
                     println("Cannot refresh token, error:  $error")
                     clearAllSharedPreferences()
                 }
-            )
-            VolleySingleton.getInstance(context).addToRequestQueue(objectRequest)
+
+            })
         }
     }
 }

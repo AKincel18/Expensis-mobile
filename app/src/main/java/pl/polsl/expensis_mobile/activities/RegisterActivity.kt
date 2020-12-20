@@ -8,8 +8,7 @@ import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.android.volley.Request
-import com.android.volley.toolbox.JsonArrayRequest
-import com.android.volley.toolbox.JsonObjectRequest
+import com.android.volley.VolleyError
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import kotlinx.android.synthetic.main.register_activity.*
@@ -22,6 +21,7 @@ import pl.polsl.expensis_mobile.models.IncomeRange
 import pl.polsl.expensis_mobile.models.User
 import pl.polsl.expensis_mobile.rest.*
 import pl.polsl.expensis_mobile.utils.IntentKeys
+import pl.polsl.expensis_mobile.utils.Messages
 import pl.polsl.expensis_mobile.utils.Utils.Companion.createUserJsonBuilder
 import pl.polsl.expensis_mobile.utils.Utils.Companion.parseDateToString
 import pl.polsl.expensis_mobile.validators.UserValidator
@@ -32,37 +32,43 @@ class RegisterActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        fetchIncomeRanges(object: ServerCallback {
-            override fun onSuccess(result: JSONArray?) {
+        fetchIncomeRangesCallback()
+    }
+
+    private fun fetchIncomeRangesCallback() {
+        fetchIncomeRanges(object: ServerCallback<JSONArray> {
+            override fun onSuccess(response: JSONArray) {
                 setContentView(R.layout.register_activity)
                 val type = object : TypeToken<List<IncomeRange>>() {}.type
-                val incomeRanges = Gson().fromJson<List<IncomeRange>>(result.toString(), type)
+                val incomeRanges = Gson().fromJson<List<IncomeRange>>(response.toString(), type)
                 fillIncomeRangeSpinner(incomeRanges)
                 fillGenderSpinner()
                 pickDateListener()
-                registerUser()
+                registerUserCallback()
+            }
+
+            override fun onFailure(error: VolleyError) {
+                val serverError = ServerErrorResponse(error)
+                val messageError = serverError.getErrorResponse()
+                errorAction(messageError)
+
             }
         })
+    }
 
+    private fun errorAction(messageError: String?) {
+        val intent = Intent(applicationContext, LoginActivity::class.java)
+        intent.putExtra(IntentKeys.RESPONSE_ERROR, messageError)
+        startActivity(intent)
     }
 
 
-    private fun fetchIncomeRanges(callback: ServerCallback) {
+    private fun fetchIncomeRanges(callback: ServerCallback<JSONArray>) {
 
         val url = BASE_URL + Endpoint.INCOME_RANGES
-        val objectRequest = JsonArrayRequest(
-            Request.Method.GET,
-            url,
-            null,
-            { response ->
-                callback.onSuccess(response)
-            },
-            { error ->
-                println("error! $error")
-            }
-        )
+        val volleyService = VolleyService(callback, this)
+        volleyService.requestArray(Request.Method.GET, url, null)
 
-        VolleySingleton.getInstance(this).addToRequestQueue(objectRequest)
     }
 
     private fun fillIncomeRangeSpinner(incomeRanges: List<IncomeRange>) {
@@ -119,7 +125,8 @@ class RegisterActivity : AppCompatActivity() {
 
     }
 
-    private fun registerUser() {
+    private fun registerUser(callback: ServerCallback<JSONObject>) {
+
         registerButton.setOnClickListener {
             val userFormDTO = UserFormDTO(
                 emailInput, genderSpinner, dateInput,
@@ -135,30 +142,35 @@ class RegisterActivity : AppCompatActivity() {
                 println(userJson)
                 val url = BASE_URL + Endpoint.USERS
                 val userJsonObject = JSONObject(userJson)
-                val objectRequest = JsonObjectRequest(
-                    Request.Method.POST,
-                    url,
-                    userJsonObject,
-                    { response ->
-                        println("Rest response = $response")
-                        val intent = Intent(applicationContext, LoginActivity::class.java)
-                        intent.putExtra(IntentKeys.REGISTERED, validationResult.message)
-                        startActivity(intent)
-                    },
-                    { error ->
-                        println("error! $error")
-                        val serverResponse = ServerErrorResponse(error)
-                        val messageError = serverResponse.getErrorResponse()
-                        if (messageError != null)
-                            Toast.makeText(this, messageError, Toast.LENGTH_SHORT).show()
-                    }
-                )
-                VolleySingleton.getInstance(this).addToRequestQueue(objectRequest)
+                val volleyService = VolleyService(this, callback)
+                volleyService.requestObject(Request.Method.POST, url, userJsonObject)
             } else {
                 Toast.makeText(this, validationResult.message, Toast.LENGTH_SHORT).show()
             }
 
         }
+    }
+
+    private fun registerUserCallback() {
+        registerUser(object: ServerCallback<JSONObject> {
+            override fun onSuccess(response: JSONObject) {
+                val intent = Intent(applicationContext, LoginActivity::class.java)
+                intent.putExtra(IntentKeys.REGISTERED, Messages.SUCCESSFULLY_REGISTERED)
+                startActivity(intent)
+            }
+
+            override fun onFailure(error: VolleyError) {
+                val serverResponse = ServerErrorResponse(error)
+                val messageError = serverResponse.getErrorResponse()
+                if (messageError != null)
+                    showToast(messageError)
+
+            }
+        })
+    }
+
+    private fun showToast(messageError: String?) {
+        Toast.makeText(this, messageError, Toast.LENGTH_SHORT).show()
     }
 
     fun onLoginClicked(view: View) {
