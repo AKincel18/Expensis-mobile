@@ -1,6 +1,7 @@
 package pl.polsl.expensis_mobile.rest
 
 import com.android.volley.NoConnectionError
+import com.android.volley.TimeoutError
 import com.android.volley.VolleyError
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
@@ -19,9 +20,9 @@ class ServerErrorResponse(private var error: VolleyError) {
                 return Messages.UNEXPECTED_ERROR
             return getFirstError(jsonObject)
         }
-        if (error is NoConnectionError)
+        if (error is NoConnectionError || error is TimeoutError)
             return Messages.NO_SERVER_CONNECTION
-        return null
+        return error.toString()
     }
 
     private fun getFirstError(jsonObject: JsonObject): String? {

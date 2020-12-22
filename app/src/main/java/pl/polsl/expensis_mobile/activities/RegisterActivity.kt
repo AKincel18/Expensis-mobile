@@ -5,6 +5,7 @@ import android.app.DatePickerDialog.OnDateSetListener
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
+import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.android.volley.Request
@@ -12,6 +13,8 @@ import com.android.volley.VolleyError
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import kotlinx.android.synthetic.main.register_activity.*
+import kotlinx.android.synthetic.main.register_activity.emailInput
+import kotlinx.android.synthetic.main.register_activity.passwordInput
 import org.json.JSONArray
 import org.json.JSONObject
 import pl.polsl.expensis_mobile.R
@@ -19,6 +22,7 @@ import pl.polsl.expensis_mobile.adapters.SpinnerAdapter
 import pl.polsl.expensis_mobile.dto.UserFormDTO
 import pl.polsl.expensis_mobile.models.IncomeRange
 import pl.polsl.expensis_mobile.models.User
+import pl.polsl.expensis_mobile.others.LoadingAction
 import pl.polsl.expensis_mobile.rest.*
 import pl.polsl.expensis_mobile.utils.IntentKeys
 import pl.polsl.expensis_mobile.utils.Messages
@@ -28,28 +32,36 @@ import pl.polsl.expensis_mobile.validators.UserValidator
 import java.util.*
 
 
-class RegisterActivity : AppCompatActivity() {
+class RegisterActivity : AppCompatActivity(), LoadingAction {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        setContentView(R.layout.register_activity)
+        showProgressBar()
+        changeEditableFields(false)
+        fillGenderSpinner()
+        initIncomeRangeSpinnerHint()
         fetchIncomeRangesCallback()
     }
 
     private fun fetchIncomeRangesCallback() {
         fetchIncomeRanges(object: ServerCallback<JSONArray> {
             override fun onSuccess(response: JSONArray) {
-                setContentView(R.layout.register_activity)
+
                 val type = object : TypeToken<List<IncomeRange>>() {}.type
                 val incomeRanges = Gson().fromJson<List<IncomeRange>>(response.toString(), type)
                 fillIncomeRangeSpinner(incomeRanges)
-                fillGenderSpinner()
                 pickDateListener()
                 registerUserCallback()
+                changeEditableFields(true)
+                registerProgressBar.visibility = View.INVISIBLE
             }
 
             override fun onFailure(error: VolleyError) {
                 val serverError = ServerErrorResponse(error)
                 val messageError = serverError.getErrorResponse()
+                registerProgressBar.visibility = View.INVISIBLE
+                changeEditableFields(false)
                 errorAction(messageError)
 
             }
@@ -72,6 +84,7 @@ class RegisterActivity : AppCompatActivity() {
     }
 
     private fun fillIncomeRangeSpinner(incomeRanges: List<IncomeRange>) {
+        incomeRangeSpinner.adapter = null //clear spinner
         val items = incomeRanges.toMutableList()
 
         items.add(IncomeRange(0, 0, 0)) //add hint
@@ -83,6 +96,17 @@ class RegisterActivity : AppCompatActivity() {
         adapter.setDropDownViewResource(R.layout.spinner_income_range_layout)
         incomeRangeSpinner.adapter = adapter
         incomeRangeSpinner.setSelection(adapter.count)
+    }
+
+    private fun initIncomeRangeSpinnerHint() {
+        val items =  arrayListOf(IncomeRange(0, 0, 0)) //add only hint
+
+        val adapter = ArrayAdapter(
+            this,
+            R.layout.spinner_income_range_layout, R.id.incomeRangeSpinnerTextView, items.toList()
+        )
+        adapter.setDropDownViewResource(R.layout.spinner_income_range_layout)
+        incomeRangeSpinner.adapter = adapter
     }
 
     private fun fillGenderSpinner() {
@@ -142,6 +166,8 @@ class RegisterActivity : AppCompatActivity() {
                 println(userJson)
                 val url = BASE_URL + Endpoint.USERS
                 val userJsonObject = JSONObject(userJson)
+                changeEditableFields(false)
+                showProgressBar()
                 val volleyService = VolleyService(this, callback)
                 volleyService.requestObject(Request.Method.POST, url, userJsonObject)
             } else {
@@ -164,6 +190,8 @@ class RegisterActivity : AppCompatActivity() {
                 val messageError = serverResponse.getErrorResponse()
                 if (messageError != null)
                     showToast(messageError)
+                changeEditableFields(true)
+                registerProgressBar.visibility = View.INVISIBLE
 
             }
         })
@@ -175,5 +203,27 @@ class RegisterActivity : AppCompatActivity() {
 
     fun onLoginClicked(view: View) {
         startActivity(Intent(this, LoginActivity::class.java))
+    }
+
+    override fun showProgressBar() {
+        Thread(Runnable {
+            this.runOnUiThread {
+                registerProgressBar.visibility = View.VISIBLE
+            }
+        }).start()
+    }
+
+    override fun changeEditableFields(isEnabled: Boolean) {
+        emailInput.isEnabled = isEnabled
+        genderSpinner.isClickable = isEnabled
+        genderSpinner.isEnabled = isEnabled
+        dateInput.isClickable = isEnabled
+        monthlyLimitInput.isEnabled = isEnabled
+        incomeRangeSpinner.isClickable = isEnabled
+        incomeRangeSpinner.isEnabled = isEnabled
+        passwordInput.isEnabled = isEnabled
+        passwordConfirmInput.isEnabled = isEnabled
+        registerButton.isEnabled = isEnabled
+        LoginLinkText.isEnabled = isEnabled
     }
 }

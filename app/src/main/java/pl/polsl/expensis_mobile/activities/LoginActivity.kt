@@ -9,11 +9,14 @@ import com.android.volley.Request
 import com.android.volley.VolleyError
 import com.google.gson.Gson
 import kotlinx.android.synthetic.main.login_activity.*
+import kotlinx.android.synthetic.main.login_activity.emailInput
+import kotlinx.android.synthetic.main.login_activity.passwordInput
 import org.json.JSONObject
 import pl.polsl.expensis_mobile.R
 import pl.polsl.expensis_mobile.dto.LoginDTO
 import pl.polsl.expensis_mobile.dto.LoginFormDTO
 import pl.polsl.expensis_mobile.others.LoggedUser
+import pl.polsl.expensis_mobile.others.LoadingAction
 import pl.polsl.expensis_mobile.rest.*
 import pl.polsl.expensis_mobile.utils.IntentKeys
 import pl.polsl.expensis_mobile.utils.SharedPreferencesUtils
@@ -27,7 +30,7 @@ import pl.polsl.expensis_mobile.utils.TokenUtils.Companion.refreshTokenCallback
 import pl.polsl.expensis_mobile.utils.Utils.Companion.createUserJsonBuilder
 import pl.polsl.expensis_mobile.validators.LoginValidator
 
-class LoginActivity : AppCompatActivity() {
+class LoginActivity : AppCompatActivity(), LoadingAction {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -40,6 +43,7 @@ class LoginActivity : AppCompatActivity() {
             setContentView(R.layout.login_activity)
             checkIntent()
             onLoginClickedCallback()
+            loginProgressBar.visibility = View.INVISIBLE
         }
     }
 
@@ -49,7 +53,7 @@ class LoginActivity : AppCompatActivity() {
         if (intent.hasExtra(IntentKeys.REGISTERED)) {
             showToast(intent.getStringExtra(IntentKeys.REGISTERED))
         }
-        if (intent.hasExtra(IntentKeys.RESPONSE_ERROR)){
+        if (intent.hasExtra(IntentKeys.RESPONSE_ERROR)) {
             showToast(intent.getStringExtra(IntentKeys.RESPONSE_ERROR))
         }
     }
@@ -60,6 +64,7 @@ class LoginActivity : AppCompatActivity() {
 
     private fun onLoginClicked(callback: ServerCallback<JSONObject>) {
         loginButton.setOnClickListener {
+
             val loginFormDTO = LoginFormDTO(emailInput, passwordInput)
             val loginValidator = LoginValidator()
             val validationResult = loginValidator.validate(loginFormDTO)
@@ -68,6 +73,8 @@ class LoginActivity : AppCompatActivity() {
                 val loginDTO = LoginDTO(loginFormDTO)
                 val userJsonObject = JSONObject(Gson().toJson(loginDTO))
                 val url = BASE_URL + Endpoint.AUTH
+                showProgressBar()
+                changeEditableFields(false)
                 val volleyService = VolleyService(this, callback)
                 volleyService.requestObject(Request.Method.POST, url, userJsonObject)
             } else {
@@ -77,10 +84,12 @@ class LoginActivity : AppCompatActivity() {
     }
 
     private fun onLoginClickedCallback() {
-        onLoginClicked(object: ServerCallback<JSONObject> {
+        onLoginClicked(object : ServerCallback<JSONObject> {
             override fun onSuccess(response: JSONObject) {
                 processResponse(response)
                 startMenuActivity()
+                changeEditableFields(true)
+                loginProgressBar.visibility = View.INVISIBLE
             }
 
             override fun onFailure(error: VolleyError) {
@@ -88,6 +97,8 @@ class LoginActivity : AppCompatActivity() {
                 val errorMessage = serverErrorResponse.getErrorResponse()
                 if (errorMessage != null) {
                     showToast(errorMessage)
+                    changeEditableFields(true)
+                    loginProgressBar.visibility = View.INVISIBLE
                 }
             }
 
@@ -116,6 +127,21 @@ class LoginActivity : AppCompatActivity() {
 
         storeTokens(accessToken, refreshToken)
         println("Rest response = $response")
+    }
+
+    override fun changeEditableFields(isEnabled: Boolean) {
+        emailInput.isEnabled = isEnabled
+        passwordInput.isEnabled = isEnabled
+        loginButton.isEnabled = isEnabled
+        registerNowText.isEnabled = isEnabled
+    }
+
+    override fun showProgressBar() {
+        Thread(Runnable {
+            this.runOnUiThread {
+                loginProgressBar.visibility = View.VISIBLE
+            }
+        }).start()
     }
 
 
