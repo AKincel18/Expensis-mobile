@@ -21,6 +21,10 @@ class Messages {
          */
         const val EMPTY_EMAIL = "Email cannot be empty"
         const val EMPTY_PASSWORD = "Password cannot be empty"
-        const val INVALID_EMAIL_OR_PASSWORD = "Invalid email or password"
+
+        /**
+         * Common
+         */
+        const val NO_SERVER_CONNECTION = "Failed to connect with server"
     }
 }

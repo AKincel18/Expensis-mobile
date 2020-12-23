@@ -1,8 +1,9 @@
 package pl.polsl.expensis_mobile.rest
 
-import org.json.JSONArray
+import com.android.volley.VolleyError
 
 
-interface ServerCallback {
-        fun onSuccess(result: JSONArray?)
-    }
+interface ServerCallback<T> {
+    fun onSuccess(response: T)
+    fun onFailure(error: VolleyError)
+}
