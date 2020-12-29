@@ -14,11 +14,13 @@ class SharedPreferencesUtils {
             applicationContext = con
         }
 
-        fun storeTokens(accessToken: String, refreshToken: String) {
+        fun storeTokens(accessToken: String, refreshToken: String, user: String?) {
             val pref = applicationContext.getSharedPreferences("MyPref", Context.MODE_PRIVATE)
             val editor = pref.edit()
             editor.putString(accessTokenConst, accessToken)
             editor.putString(refreshTokenConst, refreshToken)
+            if (user != null)
+                editor.putString(userConst, user)
             editor.apply()
         }
 
@@ -36,6 +38,17 @@ class SharedPreferencesUtils {
             return pref.getString(refreshTokenConst, null)
         }
 
+        fun getUser(): String? {
+            val pref = applicationContext.getSharedPreferences("MyPref", Context.MODE_PRIVATE)
+            return pref.getString(userConst, null)
+        }
+
+        fun setUser(user: String) {
+            val pref = applicationContext.getSharedPreferences("MyPref", Context.MODE_PRIVATE)
+            val editor = pref.edit()
+            editor.putString(userConst, user)
+            editor.apply()
+        }
         fun isTokenPresent(): Boolean {
             val pref = applicationContext.getSharedPreferences("MyPref", Context.MODE_PRIVATE)
             return pref.getString(accessTokenConst, null) != null

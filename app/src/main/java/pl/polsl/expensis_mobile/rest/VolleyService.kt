@@ -5,6 +5,7 @@ import com.android.volley.toolbox.JsonArrayRequest
 import com.android.volley.toolbox.JsonObjectRequest
 import org.json.JSONArray
 import org.json.JSONObject
+import pl.polsl.expensis_mobile.utils.SharedPreferencesUtils
 
 class VolleyService() {
 
@@ -25,7 +26,7 @@ class VolleyService() {
     }
 
     fun requestObject(method: Int, url: String, jsonRequest: JSONObject?) {
-        val objectRequest = JsonObjectRequest(method, url, jsonRequest,
+        val objectRequest = object : JsonObjectRequest(method, url, jsonRequest,
                 { response ->
                     callbackObject?.onSuccess(response)
                 },
@@ -33,6 +34,16 @@ class VolleyService() {
                     callbackObject?.onFailure(error)
                 }
         )
+        {
+            override fun getHeaders(): MutableMap<String, String> {
+                if (SharedPreferencesUtils.isTokenPresent()) {
+                    val headers = HashMap<String, String>()
+                    headers["Authorization"] = "JWT " + SharedPreferencesUtils.getAccessToken()
+                    return headers
+                }
+                return super.getHeaders()
+            }
+        }
         VolleySingleton.getInstance(context).addToRequestQueue(objectRequest)
     }
 
