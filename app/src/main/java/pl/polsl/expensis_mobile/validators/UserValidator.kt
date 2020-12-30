@@ -7,6 +7,8 @@ import pl.polsl.expensis_mobile.utils.Messages.Companion.NOT_EQUAL_PASSWORDS_ERR
 import pl.polsl.expensis_mobile.utils.Messages.Companion.NOT_SELECTED_GENDER_ERROR
 import pl.polsl.expensis_mobile.utils.Messages.Companion.NOT_SELECTED_INCOME_RANGE_ERROR
 import pl.polsl.expensis_mobile.utils.Messages.Companion.NOT_STRONG_PASSWORD_ERROR
+import pl.polsl.expensis_mobile.utils.Messages.Companion.PASSWORD_CHANGED
+import pl.polsl.expensis_mobile.utils.Messages.Companion.SUCCESSFULLY_EDITED_PROFILE
 import pl.polsl.expensis_mobile.utils.Messages.Companion.SUCCESSFULLY_REGISTERED
 import pl.polsl.expensis_mobile.utils.Messages.Companion.WRONG_DATE_ERROR
 import pl.polsl.expensis_mobile.utils.Messages.Companion.WRONG_EMAIL_ERROR
@@ -15,12 +17,9 @@ import pl.polsl.expensis_mobile.utils.Utils.Companion.stringToLocalDate
 import java.time.format.DateTimeParseException
 import java.util.regex.Pattern
 
-class UserValidator {
+class UserValidator(private val userDTO: UserFormDTO) {
 
-    lateinit var userDTO: UserFormDTO
-
-    fun validate(user: UserFormDTO): ValidationResult {
-        this.userDTO = user
+    fun validateRegisterAction(): ValidationResult {
         try {
             validateEmail()
             validateGender()
@@ -38,6 +37,27 @@ class UserValidator {
         return ValidationResult(true, SUCCESSFULLY_REGISTERED)
     }
 
+    fun validateEditProfileAction(): ValidationResult {
+        try {
+            if (userDTO.emailInput.text.toString().isNotEmpty())
+                validateEmail()
+            if (userDTO.dateInput.text.toString().isNotEmpty())
+                validateDate()
+            validateMonthlyLimit()
+            if (userDTO.passwordInput.text.toString().isNotEmpty()) {
+                validatePassword()
+                return ValidationResult(true, SUCCESSFULLY_EDITED_PROFILE, PASSWORD_CHANGED)
+            }
+        } catch (e: MyException) {
+            return ValidationResult(false, e.message!!)
+        } catch (e: DateTimeParseException) {
+            return ValidationResult(false, WRONG_DATE_ERROR)
+        } catch (e: NumberFormatException) {
+            return ValidationResult(false, WRONG_MONTHLY_LIMIT_ERROR)
+        }
+        return ValidationResult(true, SUCCESSFULLY_EDITED_PROFILE)
+    }
+
     @Throws(MyException::class)
     private fun validateEmail() {
         val email = userDTO.emailInput.text.toString()
@@ -47,7 +67,7 @@ class UserValidator {
 
     @Throws(MyException::class)
     private fun validateGender() {
-        if (userDTO.genderSpinner.selectedItem.toString() == userDTO.genderHint)
+        if (userDTO.genderSpinner.selectedItem.toString() == userDTO.hint)
             throw MyException(NOT_SELECTED_GENDER_ERROR)
     }
 

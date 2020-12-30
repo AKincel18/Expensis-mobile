@@ -21,10 +21,17 @@ class Messages {
          */
         const val EMPTY_EMAIL = "Email cannot be empty"
         const val EMPTY_PASSWORD = "Password cannot be empty"
+        const val SESSION_EXPIRED = "Session has expired, please log in"
 
         /**
          * Common
          */
         const val NO_SERVER_CONNECTION = "Failed to connect with server"
+
+        /**
+         * Profile view
+         */
+        const val SUCCESSFULLY_EDITED_PROFILE = "Successfully edited profile"
+        const val PASSWORD_CHANGED = "Password changed"
     }
 }

@@ -21,7 +21,7 @@ import pl.polsl.expensis_mobile.R
 import pl.polsl.expensis_mobile.adapters.SpinnerAdapter
 import pl.polsl.expensis_mobile.dto.UserFormDTO
 import pl.polsl.expensis_mobile.models.IncomeRange
-import pl.polsl.expensis_mobile.models.User
+import pl.polsl.expensis_mobile.models.user.UserExtension
 import pl.polsl.expensis_mobile.others.LoadingAction
 import pl.polsl.expensis_mobile.rest.*
 import pl.polsl.expensis_mobile.utils.IntentKeys
@@ -158,10 +158,10 @@ class RegisterActivity : AppCompatActivity(), LoadingAction {
                 passwordInput, passwordConfirmInput, getString(R.string.gender_hint)
             )
 
-            val userValidator = UserValidator()
-            val validationResult = userValidator.validate(userFormDTO)
+            val userValidator = UserValidator(userFormDTO)
+            val validationResult = userValidator.validateRegisterAction()
             if (validationResult.isValid) {
-                val user = User(userFormDTO)
+                val user = UserExtension(userFormDTO)
                 val userJson = createUserJsonBuilder().toJson(user)
                 println(userJson)
                 val url = BASE_URL + Endpoint.USERS

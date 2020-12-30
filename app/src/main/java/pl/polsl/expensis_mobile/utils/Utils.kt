@@ -15,6 +15,10 @@ class Utils {
             return "$dayString/$monthString/$year"
         }
 
+        fun parseFullDateToString(date: LocalDate): String {
+            return parseDateToString(date.year, date.monthValue - 1, date.dayOfMonth)
+        }
+
         @Throws(DateTimeParseException::class)
         fun stringToLocalDate(date: String): LocalDate {
             val formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")

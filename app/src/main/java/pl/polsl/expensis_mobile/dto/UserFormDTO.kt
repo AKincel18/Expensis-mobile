@@ -12,5 +12,5 @@ data class UserFormDTO(
     val incomeRangesSpinner: Spinner,
     val passwordInput: EditText,
     val passwordConfirmInput: EditText,
-    val genderHint: String
+    val hint: String?
 )
