@@ -26,7 +26,7 @@ import pl.polsl.expensis_mobile.utils.IntentKeys
 import pl.polsl.expensis_mobile.utils.Messages
 import pl.polsl.expensis_mobile.utils.Messages.Companion.PASSWORD_CHANGED
 import pl.polsl.expensis_mobile.utils.SharedPreferencesUtils
-import pl.polsl.expensis_mobile.utils.Utils.Companion.createUserJsonBuilder
+import pl.polsl.expensis_mobile.utils.Utils.Companion.getGsonWithLocalDate
 import pl.polsl.expensis_mobile.utils.Utils.Companion.parseFullDateToString
 import pl.polsl.expensis_mobile.utils.Utils.Companion.parseDateToString
 import pl.polsl.expensis_mobile.validators.UserValidator
@@ -70,12 +70,12 @@ class ProfileActivity : AppCompatActivity(), LoadingAction {
                 if (validationResult.extraMessage == PASSWORD_CHANGED) {
                     val user = UserExtension()
                     user.prepareToUpdatingExtension(userFormDTO)
-                    userJson = createUserJsonBuilder().toJson(user)
+                    userJson = getGsonWithLocalDate().toJson(user)
                     println(userJson)
                 } else {
                     val user = UserBase()
                     user.prepareToUpdatingBase(userFormDTO)
-                    userJson = createUserJsonBuilder().toJson(user)
+                    userJson = getGsonWithLocalDate().toJson(user)
                     println(userJson)
                 }
 

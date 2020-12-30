@@ -18,7 +18,7 @@ class MenuActivity : AppCompatActivity() {
     }
 
     fun onExpensesClick(view: View) {
-        //TODO: startActivity(Intent(this, ExpensesActivity::class.java))
+        startActivity(Intent(this, ExpensesActivity::class.java))
     }
 
     fun onGraphsClick(view: View) {
