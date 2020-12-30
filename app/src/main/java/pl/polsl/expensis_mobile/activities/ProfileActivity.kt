@@ -61,7 +61,7 @@ class ProfileActivity : AppCompatActivity(), LoadingAction {
     private fun onEditProfileButtonClicked(callback: ServerCallback<JSONObject>) {
         editButtonProfile.setOnClickListener {
             val userFormDTO = UserFormDTO(emailInput, genderSpinner, dateInput, monthlyLimitInput,
-                    incomeRangeSpinner, passwordInput, passwordConfirmInput, null)
+                    incomeRangeSpinner, passwordInput, passwordConfirmInput, getString(R.string.monthly_limit))
 
             val userValidator = UserValidator(userFormDTO)
             val validationResult = userValidator.validateEditProfileAction()

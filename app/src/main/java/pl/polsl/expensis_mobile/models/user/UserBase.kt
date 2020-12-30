@@ -35,8 +35,9 @@ open class UserBase {
         monthlyLimit = if (userDTO.monthlyLimitInput.text.toString().isNotEmpty()) {
             userDTO.monthlyLimitInput.text.toString().toDouble()
         } else {
-            if (userDTO.monthlyLimitInput.hint.toString().isNotEmpty())
-                userDTO.monthlyLimitInput.hint.toString().toDouble()
+            val monthlyLimitHint = userDTO.monthlyLimitInput.hint.toString()
+            if (monthlyLimitHint.isNotEmpty() && monthlyLimitHint != userDTO.hint)
+                monthlyLimitHint.toDouble()
             else
                 null
         }

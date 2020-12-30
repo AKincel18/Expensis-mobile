@@ -67,7 +67,7 @@ class UserValidator(private val userDTO: UserFormDTO) {
 
     @Throws(MyException::class)
     private fun validateGender() {
-        if (userDTO.genderSpinner.selectedItem.toString() == userDTO.genderHint)
+        if (userDTO.genderSpinner.selectedItem.toString() == userDTO.hint)
             throw MyException(NOT_SELECTED_GENDER_ERROR)
     }
 
