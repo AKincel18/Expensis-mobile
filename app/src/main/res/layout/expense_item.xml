@@ -4,6 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/expense_item_background"
+    android:layout_marginBottom="5dp"
     android:maxHeight="90dp">
 
     <TextView

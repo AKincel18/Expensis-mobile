@@ -18,7 +18,6 @@ import pl.polsl.expensis_mobile.others.LoadingAction
 import pl.polsl.expensis_mobile.rest.*
 import pl.polsl.expensis_mobile.utils.IntentKeys
 import pl.polsl.expensis_mobile.utils.SharedPreferencesUtils
-import pl.polsl.expensis_mobile.utils.SharedPreferencesUtils.Companion.clearAllSharedPreferences
 import pl.polsl.expensis_mobile.utils.TokenUtils
 import pl.polsl.expensis_mobile.utils.Utils.Companion.getGsonWithLocalDateTime
 

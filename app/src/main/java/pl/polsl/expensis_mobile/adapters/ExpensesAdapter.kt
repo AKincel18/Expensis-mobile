@@ -25,7 +25,8 @@ class ExpensesAdapter :
             currentExpense = expense
             expenseTitle.text = expense.title
             expenseDescription.text = if (expense.description != null) expense.description else ""
-            expenseValue.text = "-" + expense.value.toString()
+            val expenseValueString = "-" + expense.value.toString()
+            expenseValue.text = expenseValueString
             val formatter: DateTimeFormatter = DateTimeFormatter.ofPattern("yyy-MM-dd HH:mm:ss")
             expenseDate.text = expense.date.format(formatter)
         }

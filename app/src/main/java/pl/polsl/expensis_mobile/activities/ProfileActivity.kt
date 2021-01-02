@@ -164,7 +164,6 @@ class ProfileActivity : AppCompatActivity(), LoadingAction {
                 pickDateListener()
                 onBackButtonClicked()
                 editProfileCallback()
-                onLogoutButtonClicked()
                 changeEditableFields(true)
                 profileProgressBar.visibility = View.INVISIBLE
             }
@@ -198,13 +197,6 @@ class ProfileActivity : AppCompatActivity(), LoadingAction {
         val volleyService = VolleyService(callback, this)
         volleyService.requestArray(Request.Method.GET, url, null)
 
-    }
-
-    private fun onLogoutButtonClicked() {
-        menuLogoutButton.setOnClickListener {
-            SharedPreferencesUtils.clearAllSharedPreferences()
-            startActivity(Intent(this, LoginActivity::class.java))
-        }
     }
 
     private fun errorAction(messageError: String?) {
@@ -248,6 +240,5 @@ class ProfileActivity : AppCompatActivity(), LoadingAction {
         passwordConfirmInput.isEnabled = isEnabled
         editButtonProfile.isEnabled = isEnabled
         backButton.isEnabled = isEnabled
-        menuLogoutButton.isEnabled = isEnabled
     }
 }
