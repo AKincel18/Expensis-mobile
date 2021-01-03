@@ -27,6 +27,7 @@
     <string name="value">Value</string>
     <string name="creation_date">Date</string>
     <string name="my_expenses">My expenses</string>
+    <string name="logout">logout</string>
 
     <string-array name="gender_array">
         <item>Female</item>

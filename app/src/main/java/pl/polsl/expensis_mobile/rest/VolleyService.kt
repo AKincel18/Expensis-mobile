@@ -55,6 +55,18 @@ class VolleyService() {
         VolleySingleton.getInstance(context).addToRequestQueue(objectRequest)
     }
 
+    fun requestObjectNoAuth(method: Int, url: String, jsonRequest: JSONObject?) {
+        val objectRequest = JsonObjectRequest(method, url, jsonRequest,
+            { response ->
+                callbackObject?.onSuccess(response)
+            },
+            { error ->
+                callbackObject?.onFailure(error)
+            }
+        )
+        VolleySingleton.getInstance(context).addToRequestQueue(objectRequest)
+    }
+
 
     constructor(callback: ServerCallback<JSONArray>, context: Context) : this() {
         this.callbackArray = callback

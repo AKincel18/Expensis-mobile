@@ -7,39 +7,6 @@
     android:background="@drawable/background_gradient"
     tools:context=".activities.ProfileActivity">
 
-    <LinearLayout
-        android:id="@+id/headerLayout"
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:layout_marginTop="5dp"
-        android:orientation="horizontal"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-
-        <ImageButton
-            android:id="@+id/backButton"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:background="@drawable/ic_arrow_left"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            android:contentDescription="@string/back" />
-
-        <TextView
-            android:id="@+id/registerTitle"
-            android:layout_width="wrap_content"
-            android:layout_height="50dp"
-            android:layout_marginStart="40dp"
-            android:gravity="center|start"
-            android:text="@string/edit"
-            android:textColor="@color/primaryColor"
-            android:textAlignment="center"
-            android:fontFamily="@font/aclonica"
-            android:textSize="30sp"/>
-
-    </LinearLayout>
-
     <Button
         android:id="@+id/editButtonProfile"
         android:layout_width="290dp"
@@ -66,7 +33,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.507"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/headerLayout"
+        app:layout_constraintTop_toBottomOf="@+id/registerTitle"
         app:layout_constraintVertical_bias="0.07" />
 
     <EditText
@@ -138,7 +105,19 @@
         app:layout_constraintStart_toStartOf="@+id/monthlyLimitInput"
         app:layout_constraintTop_toBottomOf="@+id/monthlyLimitInput" />
 
-
+    <TextView
+        android:id="@+id/registerTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="50dp"
+        android:fontFamily="@font/aclonica"
+        android:gravity="center|start"
+        android:text="@string/profile"
+        android:textAlignment="center"
+        android:textColor="@color/primaryColor"
+        android:textSize="30sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/dateInput"
@@ -170,4 +149,22 @@
         app:layout_constraintTop_toTopOf="parent"
         tools:visibility="visible" />
 
+    <ImageButton
+        android:id="@+id/backButton"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:background="@drawable/ic_arrow_left"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:contentDescription="@string/back" />
+
+    <ImageButton
+        android:id="@+id/menuLogoutButton"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:background="@drawable/ic_action_logout"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:contentDescription="@string/logout"
+        android:onClick="onLogoutClicked" />
 </androidx.constraintlayout.widget.ConstraintLayout>

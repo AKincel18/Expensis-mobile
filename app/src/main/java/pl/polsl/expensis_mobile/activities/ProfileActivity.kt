@@ -47,6 +47,11 @@ class ProfileActivity : AppCompatActivity(), LoadingAction {
         setFields()
     }
 
+    fun onLogoutClicked(view: View) {
+        SharedPreferencesUtils.clearAllSharedPreferences()
+        startActivity(Intent(this, LoginActivity::class.java))
+    }
+
     private fun setFields() {
         emailInput.hint = loggedUser.email
         dateInput.hint = parseFullDateToString(loggedUser.birthDate)

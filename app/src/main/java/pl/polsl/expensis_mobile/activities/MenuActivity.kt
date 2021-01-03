@@ -29,11 +29,6 @@ class MenuActivity : AppCompatActivity() {
         startActivity(Intent(this, ProfileActivity::class.java))
     }
 
-    fun onLogoutClicked(view: View) {
-        clearAllSharedPreferences()
-        startActivity(Intent(this, LoginActivity::class.java))
-    }
-
     private fun checkIntent() {
         val intent: Intent = intent
         intent.extras

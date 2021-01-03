@@ -29,7 +29,7 @@ class TokenUtils {
             val url = BASE_URL + Endpoint.REFRESH
             val refreshTokenJsonObject = JSONObject(Gson().toJson(RefreshTokenDTO(refreshToken)))
             val volleyService = VolleyService(context, callback)
-            volleyService.requestObject(Request.Method.POST, url, refreshTokenJsonObject)
+            volleyService.requestObjectNoAuth(Request.Method.POST, url, refreshTokenJsonObject)
         }
 
         fun refreshTokenOnFailure(error: VolleyError) {
