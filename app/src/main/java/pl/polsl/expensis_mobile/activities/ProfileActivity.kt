@@ -26,7 +26,7 @@ import pl.polsl.expensis_mobile.utils.IntentKeys
 import pl.polsl.expensis_mobile.utils.Messages
 import pl.polsl.expensis_mobile.utils.Messages.Companion.PASSWORD_CHANGED
 import pl.polsl.expensis_mobile.utils.SharedPreferencesUtils
-import pl.polsl.expensis_mobile.utils.Utils.Companion.createUserJsonBuilder
+import pl.polsl.expensis_mobile.utils.Utils.Companion.getGsonWithLocalDate
 import pl.polsl.expensis_mobile.utils.Utils.Companion.parseFullDateToString
 import pl.polsl.expensis_mobile.utils.Utils.Companion.parseDateToString
 import pl.polsl.expensis_mobile.validators.UserValidator
@@ -45,6 +45,11 @@ class ProfileActivity : AppCompatActivity(), LoadingAction {
         changeEditableFields(false)
         showProgressBar()
         setFields()
+    }
+
+    fun onLogoutClicked(view: View) {
+        SharedPreferencesUtils.clearAllSharedPreferences()
+        startActivity(Intent(this, LoginActivity::class.java))
     }
 
     private fun setFields() {
@@ -70,12 +75,12 @@ class ProfileActivity : AppCompatActivity(), LoadingAction {
                 if (validationResult.extraMessage == PASSWORD_CHANGED) {
                     val user = UserExtension()
                     user.prepareToUpdatingExtension(userFormDTO)
-                    userJson = createUserJsonBuilder().toJson(user)
+                    userJson = getGsonWithLocalDate().toJson(user)
                     println(userJson)
                 } else {
                     val user = UserBase()
                     user.prepareToUpdatingBase(userFormDTO)
-                    userJson = createUserJsonBuilder().toJson(user)
+                    userJson = getGsonWithLocalDate().toJson(user)
                     println(userJson)
                 }
 
@@ -164,7 +169,6 @@ class ProfileActivity : AppCompatActivity(), LoadingAction {
                 pickDateListener()
                 onBackButtonClicked()
                 editProfileCallback()
-                onLogoutButtonClicked()
                 changeEditableFields(true)
                 profileProgressBar.visibility = View.INVISIBLE
             }
@@ -198,13 +202,6 @@ class ProfileActivity : AppCompatActivity(), LoadingAction {
         val volleyService = VolleyService(callback, this)
         volleyService.requestArray(Request.Method.GET, url, null)
 
-    }
-
-    private fun onLogoutButtonClicked() {
-        menuLogoutButton.setOnClickListener {
-            SharedPreferencesUtils.clearAllSharedPreferences()
-            startActivity(Intent(this, LoginActivity::class.java))
-        }
     }
 
     private fun errorAction(messageError: String?) {
@@ -248,6 +245,5 @@ class ProfileActivity : AppCompatActivity(), LoadingAction {
         passwordConfirmInput.isEnabled = isEnabled
         editButtonProfile.isEnabled = isEnabled
         backButton.isEnabled = isEnabled
-        menuLogoutButton.isEnabled = isEnabled
     }
 }

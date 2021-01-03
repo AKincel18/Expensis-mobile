@@ -26,7 +26,7 @@ import pl.polsl.expensis_mobile.others.LoadingAction
 import pl.polsl.expensis_mobile.rest.*
 import pl.polsl.expensis_mobile.utils.IntentKeys
 import pl.polsl.expensis_mobile.utils.Messages
-import pl.polsl.expensis_mobile.utils.Utils.Companion.createUserJsonBuilder
+import pl.polsl.expensis_mobile.utils.Utils.Companion.getGsonWithLocalDate
 import pl.polsl.expensis_mobile.utils.Utils.Companion.parseDateToString
 import pl.polsl.expensis_mobile.validators.UserValidator
 import java.util.*
@@ -162,7 +162,7 @@ class RegisterActivity : AppCompatActivity(), LoadingAction {
             val validationResult = userValidator.validateRegisterAction()
             if (validationResult.isValid) {
                 val user = UserExtension(userFormDTO)
-                val userJson = createUserJsonBuilder().toJson(user)
+                val userJson = getGsonWithLocalDate().toJson(user)
                 println(userJson)
                 val url = BASE_URL + Endpoint.USERS
                 val userJsonObject = JSONObject(userJson)

@@ -20,6 +20,14 @@
     <string name="edit">Edit profile</string>
     <string name="password_not_required">Password</string>
     <string name="confirm_password_not_required">Confirm password</string>
+    <string name="back">back</string>
+    <string name="add_expense">add_expense</string>
+    <string name="title">Title</string>
+    <string name="description">Description</string>
+    <string name="value">Value</string>
+    <string name="creation_date">Date</string>
+    <string name="my_expenses">My expenses</string>
+    <string name="logout">logout</string>
 
     <string-array name="gender_array">
         <item>Female</item>

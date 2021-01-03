@@ -30,7 +30,7 @@ class LoggedUser {
      *
      */
     fun serialize(): LoggedUser? {
-        return Utils.createUserJsonBuilder().fromJson<LoggedUser>(
+        return Utils.getGsonWithLocalDate().fromJson<LoggedUser>(
                 SharedPreferencesUtils.getUser(),
                 LoggedUser::class.java
         )

@@ -7,5 +7,6 @@ class Endpoint {
         const val USERS = "users/"
         const val AUTH = "auth/"
         const val REFRESH = "refresh/"
+        const val EXPENSES = "expenses/"
     }
 }

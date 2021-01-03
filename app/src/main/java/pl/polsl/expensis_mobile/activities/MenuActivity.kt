@@ -18,7 +18,7 @@ class MenuActivity : AppCompatActivity() {
     }
 
     fun onExpensesClick(view: View) {
-        //TODO: startActivity(Intent(this, ExpensesActivity::class.java))
+        startActivity(Intent(this, ExpensesActivity::class.java))
     }
 
     fun onGraphsClick(view: View) {
@@ -27,11 +27,6 @@ class MenuActivity : AppCompatActivity() {
 
     fun onProfileClick(view: View) {
         startActivity(Intent(this, ProfileActivity::class.java))
-    }
-
-    fun onLogoutClicked(view: View) {
-        clearAllSharedPreferences()
-        startActivity(Intent(this, LoginActivity::class.java))
     }
 
     private fun checkIntent() {
