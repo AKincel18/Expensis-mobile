@@ -84,7 +84,7 @@ class ProfileActivity : AppCompatActivity(), LoadingAction {
                     println(userJson)
                 }
 
-                val url = BASE_URL + Endpoint.USERS + loggedUser.id + "/"
+                val url = BASE_URL + Endpoint.USERS
                 val userJsonObject = JSONObject(userJson!!)
                 changeEditableFields(false)
                 showProgressBar()
