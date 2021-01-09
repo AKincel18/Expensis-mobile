@@ -1,10 +1,8 @@
 package pl.polsl.expensis_mobile.utils
 
 import com.google.gson.Gson
-import pl.polsl.expensis_mobile.adapters.LocalDateTimeTypeAdapter
 import pl.polsl.expensis_mobile.adapters.LocalDateTypeAdapter
 import java.time.LocalDate
-import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeParseException
 
@@ -14,7 +12,7 @@ class Utils {
             val month = _month + 1
             val monthString: String = if (month >= 10) month.toString() else "0$month"
             val dayString: String = if (day >= 10) day.toString() else "0$day"
-            return "$dayString/$monthString/$year"
+            return "$year-$monthString-$dayString"
         }
 
         fun parseFullDateToString(date: LocalDate): String {
@@ -23,7 +21,7 @@ class Utils {
 
         @Throws(DateTimeParseException::class)
         fun stringToLocalDate(date: String): LocalDate {
-            val formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
+            val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
             return LocalDate.parse(date, formatter)
         }
 
@@ -32,13 +30,6 @@ class Utils {
                 .newBuilder()
                 .registerTypeAdapter(LocalDate::class.java, LocalDateTypeAdapter().nullSafe())
                 .create()
-        }
-
-        fun getGsonWithLocalDateTime(): Gson {
-            return Gson().newBuilder().registerTypeAdapter(
-                LocalDateTime::class.java,
-                LocalDateTimeTypeAdapter().nullSafe()
-            ).create()
         }
     }
 }

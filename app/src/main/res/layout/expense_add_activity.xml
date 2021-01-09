@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:background="@drawable/background_gradient"
+    tools:context=".activities.AddExpenseActivity">
+
+    <ImageButton
+        android:id="@+id/addExpenseBackButton"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:background="@drawable/ic_arrow_left"
+        android:contentDescription="@string/back"
+        android:onClick="onGoBackClicked"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/addExpenseTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="50dp"
+        android:fontFamily="@font/aclonica"
+        android:gravity="center|start"
+        android:text="@string/add_expense"
+        android:textAlignment="center"
+        android:textColor="@color/primaryColor"
+        android:textSize="30sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <EditText
+        android:id="@+id/expenseTitleAdd"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="76dp"
+        android:maxLength="70"
+        android:drawableStart="@drawable/ic_title"
+        android:ems="10"
+        android:hint="@string/title_add"
+        android:importantForAutofill="no"
+        android:inputType="textMultiLine"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/addExpenseTitle" />
+
+    <EditText
+        android:id="@+id/expenseDescriptionAdd"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:maxHeight="145dp"
+        android:maxLength="150"
+        android:layout_marginTop="20dp"
+        android:drawableStart="@drawable/ic_description"
+        android:ems="10"
+        android:hint="@string/description"
+        android:importantForAutofill="no"
+        android:inputType="textMultiLine"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/expenseTitleAdd" />
+
+    <TextView
+        android:id="@+id/expenseAddDatePicker"
+        android:layout_width="wrap_content"
+        android:layout_height="37dp"
+        android:layout_marginTop="20dp"
+        android:drawableStart="@drawable/ic_action_date"
+        android:ems="10"
+        android:gravity="center|start"
+        android:hint="@string/expense_date"
+        android:textSize="18sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/expenseDescriptionAdd"
+        android:onClick="onCalendarClicked"/>
+
+    <Spinner
+        android:id="@+id/addExpenseCategorySpinner"
+        android:layout_width="wrap_content"
+        android:layout_height="30dp"
+        android:layout_marginTop="20dp"
+        android:ems="10"
+        app:layout_constraintEnd_toEndOf="@+id/expenseAddDatePicker"
+        app:layout_constraintStart_toStartOf="@+id/expenseAddDatePicker"
+        app:layout_constraintTop_toBottomOf="@+id/expenseAddDatePicker"
+        app:layout_constraintHorizontal_bias="0.0" />
+
+    <EditText
+        android:id="@+id/addExpenseValue"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:drawableStart="@drawable/ic_action_income_range"
+        android:ems="10"
+        android:hint="@string/value_add"
+        android:importantForAutofill="no"
+        android:inputType="numberDecimal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/addExpenseCategorySpinner" />
+
+    <Button
+        android:id="@+id/submitNewExpenseButton"
+        android:onClick="onAddExpenseClicked"
+        android:layout_width="290dp"
+        android:layout_height="62dp"
+        android:layout_marginTop="64dp"
+        android:background="@drawable/round_button"
+        android:text="@string/add"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.495"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/addExpenseValue" />
+
+    <ProgressBar
+        android:id="@+id/addExpenseProgressBar"
+        style="?android:attr/progressBarStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"/>
+</androidx.constraintlayout.widget.ConstraintLayout>

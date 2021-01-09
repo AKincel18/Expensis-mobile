@@ -1,12 +1,12 @@
 package pl.polsl.expensis_mobile.rest
 
 import android.content.Context
-import com.android.volley.toolbox.JsonArrayRequest
+import com.android.volley.Response
 import com.android.volley.toolbox.JsonObjectRequest
 import org.json.JSONArray
 import org.json.JSONObject
-import pl.polsl.expensis_mobile.utils.SharedPreferencesUtils.Companion.getAccessToken
-import pl.polsl.expensis_mobile.utils.SharedPreferencesUtils.Companion.isTokenPresent
+import pl.polsl.expensis_mobile.rest.requests.CustomArrayRequest
+import pl.polsl.expensis_mobile.rest.requests.CustomJsonRequest
 
 class VolleyService() {
 
@@ -15,43 +15,26 @@ class VolleyService() {
     lateinit var context: Context
 
     fun requestArray(method: Int, url: String, jsonRequest: JSONArray?) {
-        val objectRequest = object : JsonArrayRequest(method, url, jsonRequest,
-            { response ->
+        val objectRequest = CustomArrayRequest(method, url, jsonRequest,
+            Response.Listener { response ->
                 callbackArray?.onSuccess(response)
             },
-            { error ->
+            Response.ErrorListener { error ->
                 callbackArray?.onFailure(error)
             }
-        ) {
-            override fun getHeaders(): MutableMap<String, String> {
-                val headers = HashMap<String, String>()
-                if (isTokenPresent()) {
-                    headers["Authorization"] = "Bearer " + getAccessToken()
-                }
-                return headers
-            }
-        }
+        )
         VolleySingleton.getInstance(context).addToRequestQueue(objectRequest)
     }
 
     fun requestObject(method: Int, url: String, jsonRequest: JSONObject?) {
-        val objectRequest = object : JsonObjectRequest(method, url, jsonRequest,
-            { response ->
+        val objectRequest = CustomJsonRequest(method, url, jsonRequest,
+            Response.Listener { response ->
                 callbackObject?.onSuccess(response)
             },
-            { error ->
+            Response.ErrorListener { error ->
                 callbackObject?.onFailure(error)
             }
-        ) {
-            override fun getHeaders(): MutableMap<String, String> {
-                if (isTokenPresent()) {
-                    val headers = HashMap<String, String>()
-                    headers["Authorization"] = "Bearer " + getAccessToken()
-                    return headers
-                }
-                return super.getHeaders()
-            }
-        }
+        )
         VolleySingleton.getInstance(context).addToRequestQueue(objectRequest)
     }
 

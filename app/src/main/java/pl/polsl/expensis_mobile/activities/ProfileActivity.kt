@@ -26,6 +26,7 @@ import pl.polsl.expensis_mobile.utils.IntentKeys
 import pl.polsl.expensis_mobile.utils.Messages
 import pl.polsl.expensis_mobile.utils.Messages.Companion.PASSWORD_CHANGED
 import pl.polsl.expensis_mobile.utils.SharedPreferencesUtils
+import pl.polsl.expensis_mobile.utils.TokenUtils
 import pl.polsl.expensis_mobile.utils.Utils.Companion.getGsonWithLocalDate
 import pl.polsl.expensis_mobile.utils.Utils.Companion.parseFullDateToString
 import pl.polsl.expensis_mobile.utils.Utils.Companion.parseDateToString
@@ -174,12 +175,33 @@ class ProfileActivity : AppCompatActivity(), LoadingAction {
             }
 
             override fun onFailure(error: VolleyError) {
+                if (error.networkResponse.statusCode == 403) {
+                    refreshTokenCallback()
+                }
                 val serverError = ServerErrorResponse(error)
                 val messageError = serverError.getErrorResponse()
                 profileProgressBar.visibility = View.INVISIBLE
                 changeEditableFields(false)
                 errorAction(messageError)
 
+            }
+        })
+    }
+
+    private fun refreshTokenCallback() {
+        TokenUtils.refreshToken(object : ServerCallback<JSONObject> {
+            override fun onSuccess(response: JSONObject) {
+                SharedPreferencesUtils.storeTokens(
+                    response.get(SharedPreferencesUtils.accessTokenConst) as String,
+                    TokenUtils.refreshToken,
+                    null
+                )
+                startActivity(Intent(applicationContext, MenuActivity::class.java))
+            }
+
+            override fun onFailure(error: VolleyError) {
+                TokenUtils.refreshTokenOnFailure(error)
+                startActivity(Intent(applicationContext, LoginActivity::class.java))
             }
         })
     }

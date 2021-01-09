@@ -19,7 +19,8 @@ import pl.polsl.expensis_mobile.rest.*
 import pl.polsl.expensis_mobile.utils.IntentKeys
 import pl.polsl.expensis_mobile.utils.SharedPreferencesUtils
 import pl.polsl.expensis_mobile.utils.TokenUtils
-import pl.polsl.expensis_mobile.utils.Utils.Companion.getGsonWithLocalDateTime
+import pl.polsl.expensis_mobile.utils.Utils.Companion.getGsonWithLocalDate
+import java.io.Serializable
 
 class ExpensesActivity : AppCompatActivity(), LoadingAction {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -33,8 +34,8 @@ class ExpensesActivity : AppCompatActivity(), LoadingAction {
             override fun onSuccess(response: JSONArray) {
                 val type = object : TypeToken<List<Expense>>() {}.type
                 val expenses =
-                    getGsonWithLocalDateTime().fromJson<List<Expense>>(response.toString(), type)
-                val expensesAdapter = ExpensesAdapter()
+                    getGsonWithLocalDate().fromJson<List<Expense>>(response.toString(), type)
+                val expensesAdapter = ExpensesAdapter { expense -> adapterOnClick(expense) }
                 recycler_view.adapter = expensesAdapter
                 expensesAdapter.submitList(expenses)
                 expensesProgressBar.visibility = View.INVISIBLE
@@ -53,7 +54,7 @@ class ExpensesActivity : AppCompatActivity(), LoadingAction {
         })
     }
 
-    private fun refreshTokenCallback(){
+    private fun refreshTokenCallback() {
         TokenUtils.refreshToken(object : ServerCallback<JSONObject> {
             override fun onSuccess(response: JSONObject) {
                 SharedPreferencesUtils.storeTokens(
@@ -96,4 +97,19 @@ class ExpensesActivity : AppCompatActivity(), LoadingAction {
     fun onGoBackClicked(view: View) {
         startActivity(Intent(this, MenuActivity::class.java))
     }
+
+    /* Opens ExpenseDetailsActivity when RecyclerView item is clicked. */
+    private fun adapterOnClick(expense: Expense) {
+        val intent = Intent(this, ExpenseDetailsActivity::class.java)
+        intent.putExtra(
+            IntentKeys.EXPENSE_DETAIL,
+            expense as Serializable
+        )
+        startActivity(intent)
+    }
+
+    fun onAddClicked(view: View) {
+        startActivity(Intent(this, AddExpenseActivity::class.java))
+    }
+
 }
