@@ -5,7 +5,7 @@ class Messages {
         /**
          * Register view
          */
-        const val WRONG_DATE_ERROR = "Date of birth is not valid"
+        const val WRONG_DATE_ERROR = "Given date is not valid"
         const val WRONG_MONTHLY_LIMIT_ERROR = "Monthly limit is not valid"
         const val WRONG_EMAIL_ERROR = "Email is not valid"
         const val NOT_SELECTED_GENDER_ERROR = "Select gender"
@@ -33,5 +33,20 @@ class Messages {
          */
         const val SUCCESSFULLY_EDITED_PROFILE = "Successfully edited profile"
         const val PASSWORD_CHANGED = "Password changed"
+
+        /**
+         * Add expenses
+         */
+        const val SUCCESSFULLY_CREATED = "Expense created successfully"
+        const val EMPTY_TITLE = "Title cannot be empty"
+        const val NOT_SELECTED_CATEGORY = "Select category"
+        const val EMPTY_VALUE = "Value cannot be empty"
+        const val WRONG_VALUE_ERROR = "Value is not valid"
+
+        /**
+         * Expense details
+         */
+        const val SUCCESSFULLY_EDITED = "Expense edited successfully"
+
     }
 }

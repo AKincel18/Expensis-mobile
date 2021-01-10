@@ -5,5 +5,6 @@ class IntentKeys {
         const val REGISTERED = "Registered"
         const val RESPONSE_ERROR = "ResponseError"
         const val PROFILE_EDITED = "ProfileEdited"
+        const val EXPENSE_DETAIL = "Expense"
     }
 }

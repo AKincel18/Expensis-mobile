@@ -163,7 +163,6 @@ class RegisterActivity : AppCompatActivity(), LoadingAction {
             if (validationResult.isValid) {
                 val user = UserExtension(userFormDTO)
                 val userJson = getGsonWithLocalDate().toJson(user)
-                println(userJson)
                 val url = BASE_URL + Endpoint.USERS
                 val userJsonObject = JSONObject(userJson)
                 changeEditableFields(false)
