@@ -42,7 +42,7 @@ class ExpensesActivity : AppCompatActivity(), LoadingAction {
             }
 
             override fun onFailure(error: VolleyError) {
-                if (error.networkResponse.statusCode == 403) {
+                if (error.networkResponse != null && error.networkResponse.statusCode == 403) {
                     refreshTokenCallback()
                 } else {
                     val serverError = ServerErrorResponse(error)
@@ -85,16 +85,16 @@ class ExpensesActivity : AppCompatActivity(), LoadingAction {
     }
 
     override fun showProgressBar() {
-        Thread(Runnable {
+        Thread {
             this.runOnUiThread {
                 registerProgressBar.visibility = View.VISIBLE
             }
-        }).start()
+        }.start()
     }
 
     override fun changeEditableFields(isEnabled: Boolean) {}
 
-    fun onGoBackClicked(view: View) {
+    fun onGoBackClicked(@Suppress("UNUSED_PARAMETER") view: View) {
         startActivity(Intent(this, MenuActivity::class.java))
     }
 
@@ -108,7 +108,7 @@ class ExpensesActivity : AppCompatActivity(), LoadingAction {
         startActivity(intent)
     }
 
-    fun onAddClicked(view: View) {
+    fun onAddClicked(@Suppress("UNUSED_PARAMETER") view: View) {
         startActivity(Intent(this, AddExpenseActivity::class.java))
     }
 

@@ -12,7 +12,6 @@
         android:layout_height="match_parent"
         android:textSize="18sp"
         android:textStyle="bold"
-        style="@style/Widget.AppCompat.EditText"
-        android:background="@null"/>
+        android:textColor="@color/white"/>
 
 </LinearLayout>

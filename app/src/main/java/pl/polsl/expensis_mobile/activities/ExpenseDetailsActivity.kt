@@ -15,7 +15,6 @@ import com.android.volley.VolleyError
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import kotlinx.android.synthetic.main.expense_details_activity.*
-import kotlinx.android.synthetic.main.register_activity.*
 import org.json.JSONArray
 import org.json.JSONObject
 import pl.polsl.expensis_mobile.R
@@ -35,8 +34,8 @@ import java.util.*
 
 class ExpenseDetailsActivity : AppCompatActivity(), LoadingAction {
 
-    var editMode: Boolean = false
-    lateinit var expense: Expense
+    private var editMode: Boolean = false
+    private lateinit var expense: Expense
     private lateinit var editableSpinnerBackground: Drawable
     private lateinit var editableTextViewBackground: Drawable
 
@@ -62,11 +61,11 @@ class ExpenseDetailsActivity : AppCompatActivity(), LoadingAction {
     }
 
     override fun showProgressBar() {
-        Thread(Runnable {
+        Thread {
             this.runOnUiThread {
                 expenseProgressBar.visibility = View.VISIBLE
             }
-        }).start()
+        }.start()
     }
 
     fun hideProgressBar() {
@@ -95,12 +94,12 @@ class ExpenseDetailsActivity : AppCompatActivity(), LoadingAction {
         if (!isEnabled) expenseDetailsValue.updatePadding(left = 0)
     }
 
-    fun onGoBackClicked(view: View) {
+    fun onGoBackClicked(@Suppress("UNUSED_PARAMETER") view: View) {
         startExpensesActivity()
     }
 
 
-    fun onDeleteClicked(view: View) {
+    fun onDeleteClicked(@Suppress("UNUSED_PARAMETER") view: View) {
         showDeleteConfirmationDialog()
     }
 
@@ -116,8 +115,6 @@ class ExpenseDetailsActivity : AppCompatActivity(), LoadingAction {
             override fun onFailure(error: VolleyError) {
                 val serverError = ServerErrorResponse(error)
                 val messageError = serverError.getErrorResponse()
-                registerProgressBar.visibility = View.INVISIBLE
-                changeEditableFields(false)
                 errorAction(messageError)
             }
         })
@@ -135,11 +132,11 @@ class ExpenseDetailsActivity : AppCompatActivity(), LoadingAction {
         adapter.setDropDownViewResource(R.layout.spinner_category_no_logo_layout)
         expenseDetailsCategory.adapter = adapter
 
-        var categoryIndex = 0;
-        for (i in 0 until categories.size - 1) {
+        var categoryIndex = 0
+        for (i in categories.indices) {
             if (categories[i].value == expense.category) {
-                categoryIndex = i;
-                break;
+                categoryIndex = i
+                break
             }
         }
 
@@ -166,7 +163,7 @@ class ExpenseDetailsActivity : AppCompatActivity(), LoadingAction {
         val dialogBuilder = AlertDialog.Builder(this)
         dialogBuilder.setTitle("Delete confirmation")
         dialogBuilder.setMessage("Are you sure you wanna delete this expense?")
-        dialogBuilder.setPositiveButton("Yes") { dialog, which ->
+        dialogBuilder.setPositiveButton("Yes") { _, _ ->
             deleteExpense()
         }
         dialogBuilder.setNeutralButton("Cancel") { _, _ -> }
@@ -204,17 +201,18 @@ class ExpenseDetailsActivity : AppCompatActivity(), LoadingAction {
         volleyService.requestObject(Request.Method.DELETE, url, null)
     }
 
-    fun onEditClicked(view: View) {
+    fun onEditClicked(@Suppress("UNUSED_PARAMETER") view: View) {
         editMode = !editMode
-        if (editMode) {
-            view.setBackgroundResource(R.drawable.ic_apply)
-            changeEditableFields(true)
-        } else {
-            view.setBackgroundResource(R.drawable.ic_edit)
-            changeEditableFields(false)
+        changeIconAndEditableFields(editMode)
+        if (!editMode) {
             currentFocus?.clearFocus()
             saveChangesInDatabase()
         }
+    }
+
+    private fun changeIconAndEditableFields(isEditable: Boolean) {
+        editExpenseIcon.setBackgroundResource(if (isEditable) R.drawable.ic_apply else R.drawable.ic_edit)
+        changeEditableFields(isEditable)
     }
 
     private fun saveChangesInDatabase() {
@@ -249,6 +247,7 @@ class ExpenseDetailsActivity : AppCompatActivity(), LoadingAction {
                 val messageError = serverResponse.getErrorResponse()
                 if (messageError != null)
                     showToast(messageError)
+                changeIconAndEditableFields(true)
                 hideProgressBar()
             }
         })
@@ -260,7 +259,7 @@ class ExpenseDetailsActivity : AppCompatActivity(), LoadingAction {
         volleyService.requestObject(Request.Method.PUT, url, expenseJsonObject)
     }
 
-    fun onCreationDateClicked(view: View) {
+    fun onCreationDateClicked(@Suppress("UNUSED_PARAMETER") view: View) {
         val dateSetListener =
             DatePickerDialog.OnDateSetListener { _, year, monthOfYear, dayOfMonth ->
                 run {
