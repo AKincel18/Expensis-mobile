@@ -23,11 +23,11 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <Button
-        android:id="@+id/menuGraphsButton"
+        android:id="@+id/menuStatsButton"
         android:layout_width="339dp"
         android:layout_height="157dp"
-        android:onClick="onGraphsClick"
-        android:text="@string/graphs"
+        android:onClick="onStatsClick"
+        android:text="@string/stats"
         android:textAlignment="center"
         android:textAllCaps="false"
         android:textSize="30sp"

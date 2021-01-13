@@ -6,5 +6,7 @@ class IntentKeys {
         const val RESPONSE_ERROR = "ResponseError"
         const val PROFILE_EDITED = "ProfileEdited"
         const val EXPENSE_DETAIL = "Expense"
+        const val DATA_STATS = "DataStats"
+        const val DATA_NAME = "DataName"
     }
 }

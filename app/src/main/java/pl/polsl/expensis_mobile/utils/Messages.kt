@@ -48,5 +48,10 @@ class Messages {
          */
         const val SUCCESSFULLY_EDITED = "Expense edited successfully"
 
+        /**
+         * Stats view
+         */
+        const val NOT_SELECTED_FILTER = "Select at least one of the filters"
+
     }
 }

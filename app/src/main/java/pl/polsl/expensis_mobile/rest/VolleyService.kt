@@ -6,6 +6,7 @@ import com.android.volley.toolbox.JsonObjectRequest
 import org.json.JSONArray
 import org.json.JSONObject
 import pl.polsl.expensis_mobile.rest.requests.CustomArrayRequest
+import pl.polsl.expensis_mobile.rest.requests.CustomJsonArrayRequest
 import pl.polsl.expensis_mobile.rest.requests.CustomJsonRequest
 
 class VolleyService() {
@@ -36,6 +37,23 @@ class VolleyService() {
             }
         )
         VolleySingleton.getInstance(context).addToRequestQueue(objectRequest)
+    }
+
+    /**
+     * request -> jsonObject
+     * response -> jsonArray
+     */
+    fun requestMixed(method: Int, url: String, jsonRequest: JSONObject?) {
+        val objectRequest = CustomJsonArrayRequest(method, url, jsonRequest,
+                Response.Listener {
+                    response -> callbackArray?.onSuccess(response!!)
+                },
+                Response.ErrorListener {
+                    error -> callbackArray?.onFailure(error)
+                }
+        )
+        VolleySingleton.getInstance(context).addToRequestQueue(objectRequest)
+
     }
 
     fun requestObjectNoAuth(method: Int, url: String, jsonRequest: JSONObject?) {

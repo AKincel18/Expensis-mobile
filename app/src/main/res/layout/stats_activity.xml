@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/background_gradient"
+    tools:context=".activities.stats.StatsActivity">
+
+    <ImageButton
+        android:id="@+id/backButton"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:background="@drawable/ic_arrow_left"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:contentDescription="@string/back" />
+
+    <TextView
+        android:id="@+id/selectStatText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="48dp"
+        android:text="@string/select_stat"
+        android:textColor="@color/material_on_surface_emphasis_medium"
+        android:textStyle="italic"
+        app:layout_constraintEnd_toEndOf="@+id/statsTitle"
+        app:layout_constraintStart_toStartOf="@+id/statsTitle"
+        app:layout_constraintTop_toBottomOf="@+id/statsTitle" />
+
+    <TextView
+        android:id="@+id/statsTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="50dp"
+        android:fontFamily="@font/aclonica"
+        android:gravity="center|start"
+        android:text="@string/stats"
+        android:textAlignment="center"
+        android:textColor="@color/primaryColor"
+        android:textSize="30sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+
+    <Spinner
+        android:id="@+id/statsNameSpinner"
+        android:layout_width="210dp"
+        android:layout_height="35dp"
+        android:layout_marginTop="8dp"
+        android:gravity="center"
+        app:layout_constraintEnd_toEndOf="@+id/selectStatText"
+        app:layout_constraintStart_toStartOf="@+id/selectStatText"
+        app:layout_constraintTop_toBottomOf="@+id/selectStatText" />
+
+    <CheckBox
+        android:id="@+id/incomeRangeCheckBox"
+        android:layout_width="210dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="70dp"
+        android:checked="false"
+        android:text="@string/income_range"
+        app:layout_constraintEnd_toEndOf="@+id/statsNameSpinner"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="@+id/statsNameSpinner"
+        app:layout_constraintTop_toBottomOf="@+id/statsNameSpinner" />
+
+    <CheckBox
+        android:id="@+id/genderCheckBox"
+        android:layout_width="210dp"
+        android:layout_height="wrap_content"
+        android:checked="false"
+        android:text="@string/gender"
+        android:layout_marginTop="30dp"
+        app:layout_constraintEnd_toEndOf="@+id/incomeRangeCheckBox"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="@+id/incomeRangeCheckBox"
+        app:layout_constraintTop_toBottomOf="@+id/incomeRangeCheckBox"/>
+
+    <CheckBox
+        android:id="@+id/ageRangeCheckBox"
+        android:layout_width="210dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
+        android:text="@string/age_range"
+        app:layout_constraintEnd_toEndOf="@+id/genderCheckBox"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="@+id/genderCheckBox"
+        app:layout_constraintTop_toBottomOf="@+id/genderCheckBox"/>
+
+    <Button
+        android:id="@+id/showStatButton"
+        android:layout_width="250dp"
+        android:layout_height="70dp"
+        android:layout_marginTop="100dp"
+        android:text="@string/show_stat"
+        app:layout_constraintEnd_toEndOf="@+id/ageRangeCheckBox"
+        app:layout_constraintStart_toStartOf="@+id/ageRangeCheckBox"
+        app:layout_constraintTop_toBottomOf="@+id/ageRangeCheckBox" />
+
+
+    <ProgressBar
+        android:id="@+id/statProgressBar"
+        style="?android:attr/progressBarStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"/>
+</androidx.constraintlayout.widget.ConstraintLayout>
