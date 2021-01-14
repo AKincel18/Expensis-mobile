@@ -1,4 +1,4 @@
-package pl.polsl.expensis_mobile.activities
+package pl.polsl.expensis_mobile.activities.expenses
 
 import android.content.Intent
 import android.os.Bundle
@@ -12,6 +12,8 @@ import kotlinx.android.synthetic.main.register_activity.*
 import org.json.JSONArray
 import org.json.JSONObject
 import pl.polsl.expensis_mobile.R
+import pl.polsl.expensis_mobile.activities.LoginActivity
+import pl.polsl.expensis_mobile.activities.MenuActivity
 import pl.polsl.expensis_mobile.adapters.ExpensesAdapter
 import pl.polsl.expensis_mobile.models.Expense
 import pl.polsl.expensis_mobile.others.LoadingAction

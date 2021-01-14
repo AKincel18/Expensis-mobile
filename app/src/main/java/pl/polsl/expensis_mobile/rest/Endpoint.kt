@@ -9,5 +9,6 @@ class Endpoint {
         const val REFRESH = "refresh/"
         const val EXPENSES = "expenses/"
         const val CATEGORIES = "categories/"
+        const val STATS = "stats/"
     }
 }

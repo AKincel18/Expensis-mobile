@@ -15,7 +15,7 @@
     <string name="gender_hint">Gender*</string>
     <string name="required_field_sign">*</string>
     <string name="expenses">Expenses</string>
-    <string name="graphs">Graphs</string>
+    <string name="statistics">Statistics</string>
     <string name="profile">Profile</string>
     <string name="edit">Edit profile</string>
     <string name="password_not_required">Password</string>
@@ -36,6 +36,11 @@
     <string name="add">Add</string>
     <string name="category_add">Category*</string>
     <string name="spinner_image">spinnerImage</string>
+    <string name="select_statistic">Select statistics</string>
+    <string name="income_range">Income range</string>
+    <string name="age_range">Age range</string>
+    <string name="show_statistics">Show statistics</string>
+
     <string-array name="gender_array">
         <item>Female</item>
         <item>Male</item>
