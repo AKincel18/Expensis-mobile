@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.Color
 import androidx.core.content.ContextCompat.getColor
 import com.github.mikephil.charting.charts.BarChart
+import com.github.mikephil.charting.components.LegendEntry
 import com.github.mikephil.charting.components.LimitLine
 import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.components.YAxis
@@ -13,21 +14,21 @@ import com.github.mikephil.charting.data.BarEntry
 import com.github.mikephil.charting.formatter.DefaultValueFormatter
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
 import pl.polsl.expensis_mobile.R
-import pl.polsl.expensis_mobile.dto.stats.StatResponseDTO
-import pl.polsl.expensis_mobile.others.StatName
+import pl.polsl.expensis_mobile.dto.stats.StatsResponseDTO
+import pl.polsl.expensis_mobile.others.StatsName
 import kotlin.math.round
 
 class ChartBuilder(private val context: Context, private val chart: BarChart,
-                   private val statResponseDTOs: List<StatResponseDTO>,
-                   private val statName: StatName?
+                   private val statsResponseDTOS: List<StatsResponseDTO>,
+                   private val statsName: StatsName?
 ) {
+    private val userColor = Color.rgb(0, 170, 116)
+    private val othersColor = Color.rgb(255, 166, 0)
 
-    private val userColor = Color.rgb(0, 255, 0)
-    private val othersColor = Color.rgb(255, 0, 0)
     private val textSize = 12f
 
     fun buildChart() {
-        if (statName == StatName.SEPARATED) {
+        if (statsName == StatsName.SEPARATED) {
             buildSeparatedChart()
         } else {
             buildOthersChart()
@@ -39,14 +40,14 @@ class ChartBuilder(private val context: Context, private val chart: BarChart,
         val allDataEntries: MutableList<BarEntry> = arrayListOf()
         val groupNames: MutableList<String> = arrayListOf()
         var iterator = 0.0f
-        for (statResponseDTO in statResponseDTOs) {
-            if (statResponseDTO.userValue != 0.0f)
-                userDataEntries.add(BarEntry(iterator, statResponseDTO.userValue))
+        for (statsResponseDTO in statsResponseDTOS) {
+            if (statsResponseDTO.userValue != 0.0f)
+                userDataEntries.add(BarEntry(iterator, statsResponseDTO.userValue))
 
-            if (statResponseDTO.allValue != 0.0f)
-                allDataEntries.add(BarEntry(iterator, statResponseDTO.allValue))
+            if (statsResponseDTO.allValue != 0.0f)
+                allDataEntries.add(BarEntry(iterator, statsResponseDTO.allValue))
 
-            groupNames.add(statResponseDTO.nameValue)
+            groupNames.add(statsResponseDTO.nameValue)
             iterator += 3f
         }
 
@@ -73,12 +74,12 @@ class ChartBuilder(private val context: Context, private val chart: BarChart,
         val barNames: MutableList<String> = arrayListOf()
         var userValue = 0.0f
         var iterator = 0.5f
-        for (statResponseDTO in statResponseDTOs) {
-            if (statResponseDTO.userValue != 0.0f)
-                userValue = statResponseDTO.userValue
-            if (statResponseDTO.allValue != 0.0f)
-                allDataEntries.add(BarEntry(iterator, statResponseDTO.allValue))
-            barNames.add(statResponseDTO.nameValue)
+        for (statsResponseDTO in statsResponseDTOS) {
+            if (statsResponseDTO.userValue != 0.0f)
+                userValue = statsResponseDTO.userValue
+            if (statsResponseDTO.allValue != 0.0f)
+                allDataEntries.add(BarEntry(iterator, statsResponseDTO.allValue))
+            barNames.add(statsResponseDTO.nameValue)
             iterator += 1f
         }
 
@@ -86,16 +87,21 @@ class ChartBuilder(private val context: Context, private val chart: BarChart,
 
         val barData = BarData(othersSet)
 
-        val line = LimitLine(userValue, "Me: ${round(userValue).toInt()}")
+        val line = LimitLine(userValue)
         line.labelPosition = LimitLine.LimitLabelPosition.LEFT_TOP
         line.lineColor = userColor
-        line.lineWidth = 3f
-        line.textColor = userColor
+        line.lineWidth = 1.5f
         line.textSize = textSize
         line.yOffset = 5f
         chart.axisLeft.addLimitLine(line)
         chart.data = barData
-
+        val lineLegend = LegendEntry()
+        lineLegend.label = "Me: ${round(userValue).toInt()}"
+        lineLegend.formColor = userColor
+        val legends = chart.legend.entries.toMutableList()
+        legends.add(lineLegend)
+        legends.reverse()
+        chart.legend.setCustom(legends)
         prepareXAxisSettings(barNames)
         prepareChartSettings()
     }
@@ -114,7 +120,7 @@ class ChartBuilder(private val context: Context, private val chart: BarChart,
         val xAxis = chart.xAxis
         xAxis.setCenterAxisLabels(true)
         xAxis.axisMinimum = 0.0f
-        xAxis.axisMaximum = statResponseDTOs.size.toFloat()
+        xAxis.axisMaximum = statsResponseDTOS.size.toFloat()
         xAxis.valueFormatter = IndexAxisValueFormatter(labelNames)
         xAxis.textSize = textSize
         xAxis.position = XAxis.XAxisPosition.BOTTOM
@@ -139,8 +145,8 @@ class ChartBuilder(private val context: Context, private val chart: BarChart,
     }
 
     private fun getRoundedMaxValue(): Float {
-        val maxAllValue = statResponseDTOs.maxBy { response -> response.allValue }!!.allValue
-        val maxUserValue = statResponseDTOs.maxBy { response -> response.userValue }!!.userValue
+        val maxAllValue = statsResponseDTOS.maxBy { response -> response.allValue }!!.allValue
+        val maxUserValue = statsResponseDTOS.maxBy { response -> response.userValue }!!.userValue
         return if (maxAllValue >= maxUserValue)
             maxAllValue + maxAllValue / 10
         else

@@ -2,7 +2,7 @@ package pl.polsl.expensis_mobile.dto.stats
 
 import com.google.gson.annotations.SerializedName
 
-class StatResponseDTO(
+class StatsResponseDTO(
 
         @SerializedName("name_value")
         val nameValue: String,

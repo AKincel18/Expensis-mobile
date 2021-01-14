@@ -16,11 +16,11 @@ import org.json.JSONObject
 import pl.polsl.expensis_mobile.R
 import pl.polsl.expensis_mobile.activities.LoginActivity
 import pl.polsl.expensis_mobile.activities.MenuActivity
-import pl.polsl.expensis_mobile.dto.stats.StatFilterDTO
-import pl.polsl.expensis_mobile.dto.stats.StatRequestDTO
-import pl.polsl.expensis_mobile.dto.stats.StatRequestFormDTO
+import pl.polsl.expensis_mobile.dto.stats.StatsFilterDTO
+import pl.polsl.expensis_mobile.dto.stats.StatsRequestDTO
+import pl.polsl.expensis_mobile.dto.stats.StatsRequestFormDTO
 import pl.polsl.expensis_mobile.others.LoadingAction
-import pl.polsl.expensis_mobile.others.StatName
+import pl.polsl.expensis_mobile.others.StatsName
 import pl.polsl.expensis_mobile.rest.*
 import pl.polsl.expensis_mobile.utils.IntentKeys
 import pl.polsl.expensis_mobile.utils.SharedPreferencesUtils
@@ -32,7 +32,7 @@ class StatsActivity : AppCompatActivity(), LoadingAction {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.stats_activity)
-        statProgressBar.visibility = View.INVISIBLE
+        statsProgressBar.visibility = View.INVISIBLE
         initSpinner()
         onItemSelectedSpinnerListener()
         checkBoxesListener()
@@ -41,9 +41,9 @@ class StatsActivity : AppCompatActivity(), LoadingAction {
     }
 
     private fun initSpinner() {
-        val adapter = ArrayAdapter<StatName>(
+        val adapter = ArrayAdapter<StatsName>(
                 this, R.layout.spinner_stats_name_layout,
-                R.id.statsNameSpinnerTextView, StatName.values()
+                R.id.statsNameSpinnerTextView, StatsName.values()
         )
         adapter.setDropDownViewResource(R.layout.spinner_stats_name_layout)
         statsNameSpinner.adapter = adapter
@@ -54,7 +54,7 @@ class StatsActivity : AppCompatActivity(), LoadingAction {
             override fun onSuccess(response: JSONArray) {
                 val intent = Intent(applicationContext, DisplayStatsActivity::class.java)
                 intent.putExtra(IntentKeys.DATA_STATS, response.toString())
-                intent.putExtra(IntentKeys.DATA_NAME, (statsNameSpinner.selectedItem as StatName).ordinal)
+                intent.putExtra(IntentKeys.DATA_NAME, (statsNameSpinner.selectedItem as StatsName).ordinal)
                 startActivity(intent)
             }
 
@@ -64,7 +64,7 @@ class StatsActivity : AppCompatActivity(), LoadingAction {
                 } else {
                     val serverError = ServerErrorResponse(error)
                     val messageError = serverError.getErrorResponse()
-                    statProgressBar.visibility = View.INVISIBLE
+                    statsProgressBar.visibility = View.INVISIBLE
                     changeEditableFields(true)
                     Toast.makeText(applicationContext, messageError, Toast.LENGTH_SHORT).show()
                 }
@@ -91,16 +91,16 @@ class StatsActivity : AppCompatActivity(), LoadingAction {
     }
 
     private fun onShowStatClicked(callback: ServerCallback<JSONArray>) {
-        showStatButton.setOnClickListener {
-            val statForm = StatRequestFormDTO(
+        showStatsButton.setOnClickListener {
+            val statForm = StatsRequestFormDTO(
                     statsNameSpinner, incomeRangeCheckBox, ageRangeCheckBox, genderCheckBox
             )
             val statValidator = StatsValidator(statForm)
             val validationResult = statValidator.validateStats()
             if (validationResult.isValid) {
-                val statRequest = StatRequestDTO(
+                val statRequest = StatsRequestDTO(
                         statsNameSpinner.selectedItem.toString(),
-                        StatFilterDTO(
+                        StatsFilterDTO(
                                 incomeRangeCheckBox.isChecked,
                                 ageRangeCheckBox.isChecked,
                                 genderCheckBox.isChecked
@@ -124,7 +124,7 @@ class StatsActivity : AppCompatActivity(), LoadingAction {
         statsNameSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onNothingSelected(parent: AdapterView<*>?) {}
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-                if (statsNameSpinner.selectedItem == StatName.SEPARATED) {
+                if (statsNameSpinner.selectedItem == StatsName.SEPARATED) {
                     incomeRangeCheckBox.isChecked = false
                     ageRangeCheckBox.isChecked = false
                     genderCheckBox.isChecked = false
@@ -135,21 +135,21 @@ class StatsActivity : AppCompatActivity(), LoadingAction {
 
     private fun checkBoxesListener() {
         incomeRangeCheckBox.setOnClickListener {
-            if (statsNameSpinner.selectedItem == StatName.SEPARATED) {
+            if (statsNameSpinner.selectedItem == StatsName.SEPARATED) {
                 ageRangeCheckBox.isChecked = false
                 genderCheckBox.isChecked = false
             }
         }
 
         ageRangeCheckBox.setOnClickListener {
-            if (statsNameSpinner.selectedItem == StatName.SEPARATED) {
+            if (statsNameSpinner.selectedItem == StatsName.SEPARATED) {
                 incomeRangeCheckBox.isChecked = false
                 genderCheckBox.isChecked = false
             }
         }
 
         genderCheckBox.setOnClickListener {
-            if (statsNameSpinner.selectedItem == StatName.SEPARATED) {
+            if (statsNameSpinner.selectedItem == StatsName.SEPARATED) {
                 incomeRangeCheckBox.isChecked = false
                 ageRangeCheckBox.isChecked = false
             }
@@ -165,7 +165,7 @@ class StatsActivity : AppCompatActivity(), LoadingAction {
     override fun showProgressBar() {
         Thread(Runnable {
             this.runOnUiThread {
-                statProgressBar.visibility = View.VISIBLE
+                statsProgressBar.visibility = View.VISIBLE
             }
         }).start()
     }
@@ -177,6 +177,6 @@ class StatsActivity : AppCompatActivity(), LoadingAction {
         incomeRangeCheckBox.isEnabled = isEnabled
         genderCheckBox.isEnabled = isEnabled
         ageRangeCheckBox.isEnabled = isEnabled
-        showStatButton.isEnabled = isEnabled
+        showStatsButton.isEnabled = isEnabled
     }
 }

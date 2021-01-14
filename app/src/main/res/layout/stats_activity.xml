@@ -17,11 +17,11 @@
         android:contentDescription="@string/back" />
 
     <TextView
-        android:id="@+id/selectStatText"
+        android:id="@+id/selectStatsText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="48dp"
-        android:text="@string/select_stat"
+        android:text="@string/select_statistic"
         android:textColor="@color/material_on_surface_emphasis_medium"
         android:textStyle="italic"
         app:layout_constraintEnd_toEndOf="@+id/statsTitle"
@@ -34,7 +34,7 @@
         android:layout_height="50dp"
         android:fontFamily="@font/aclonica"
         android:gravity="center|start"
-        android:text="@string/stats"
+        android:text="@string/statistics"
         android:textAlignment="center"
         android:textColor="@color/primaryColor"
         android:textSize="30sp"
@@ -49,9 +49,9 @@
         android:layout_height="35dp"
         android:layout_marginTop="8dp"
         android:gravity="center"
-        app:layout_constraintEnd_toEndOf="@+id/selectStatText"
-        app:layout_constraintStart_toStartOf="@+id/selectStatText"
-        app:layout_constraintTop_toBottomOf="@+id/selectStatText" />
+        app:layout_constraintEnd_toEndOf="@+id/selectStatsText"
+        app:layout_constraintStart_toStartOf="@+id/selectStatsText"
+        app:layout_constraintTop_toBottomOf="@+id/selectStatsText" />
 
     <CheckBox
         android:id="@+id/incomeRangeCheckBox"
@@ -89,18 +89,18 @@
         app:layout_constraintTop_toBottomOf="@+id/genderCheckBox"/>
 
     <Button
-        android:id="@+id/showStatButton"
+        android:id="@+id/showStatsButton"
         android:layout_width="250dp"
         android:layout_height="70dp"
         android:layout_marginTop="100dp"
-        android:text="@string/show_stat"
+        android:text="@string/show_statistics"
         app:layout_constraintEnd_toEndOf="@+id/ageRangeCheckBox"
         app:layout_constraintStart_toStartOf="@+id/ageRangeCheckBox"
         app:layout_constraintTop_toBottomOf="@+id/ageRangeCheckBox" />
 
 
     <ProgressBar
-        android:id="@+id/statProgressBar"
+        android:id="@+id/statsProgressBar"
         style="?android:attr/progressBarStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

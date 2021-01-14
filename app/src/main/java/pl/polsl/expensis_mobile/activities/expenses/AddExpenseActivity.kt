@@ -1,4 +1,4 @@
-package pl.polsl.expensis_mobile.activities
+package pl.polsl.expensis_mobile.activities.expenses
 
 import android.app.DatePickerDialog
 import android.content.Intent

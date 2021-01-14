@@ -1,6 +1,6 @@
 package pl.polsl.expensis_mobile.dto.stats
 
-class StatRequestDTO(
+class StatsRequestDTO(
         val name: String,
-        val filters: StatFilterDTO
+        val filters: StatsFilterDTO
 )

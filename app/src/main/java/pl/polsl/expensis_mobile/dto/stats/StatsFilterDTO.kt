@@ -2,7 +2,7 @@ package pl.polsl.expensis_mobile.dto.stats
 
 import com.google.gson.annotations.SerializedName
 
-class StatFilterDTO(
+class StatsFilterDTO(
         @SerializedName("income_range")
         val incomeRange: Boolean,
 

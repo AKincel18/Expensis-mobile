@@ -6,9 +6,9 @@ import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import pl.polsl.expensis_mobile.R
+import pl.polsl.expensis_mobile.activities.expenses.ExpensesActivity
 import pl.polsl.expensis_mobile.activities.stats.StatsActivity
 import pl.polsl.expensis_mobile.utils.IntentKeys
-import pl.polsl.expensis_mobile.utils.SharedPreferencesUtils.Companion.clearAllSharedPreferences
 
 class MenuActivity : AppCompatActivity() {
 

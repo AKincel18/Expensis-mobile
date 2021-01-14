@@ -1,11 +1,11 @@
 package pl.polsl.expensis_mobile.validators
 
-import pl.polsl.expensis_mobile.dto.stats.StatRequestFormDTO
+import pl.polsl.expensis_mobile.dto.stats.StatsRequestFormDTO
 import pl.polsl.expensis_mobile.exceptions.MyException
-import pl.polsl.expensis_mobile.others.StatName
+import pl.polsl.expensis_mobile.others.StatsName
 import pl.polsl.expensis_mobile.utils.Messages.Companion.NOT_SELECTED_FILTER
 
-class StatsValidator(private val statRequestFormDTO: StatRequestFormDTO) {
+class StatsValidator(private val statsRequestFormDTO: StatsRequestFormDTO) {
 
     fun validateStats(): ValidationResult {
         try {
@@ -18,11 +18,11 @@ class StatsValidator(private val statRequestFormDTO: StatRequestFormDTO) {
 
     @Throws(MyException::class)
     private fun validateFilters() {
-        val selectedStatName = statRequestFormDTO.statNameSpinner.selectedItem as StatName
-        if (selectedStatName == StatName.COMBINED || selectedStatName == StatName.SEPARATED) {
-            if (!statRequestFormDTO.incomeRangeCheckBox.isChecked &&
-                    !statRequestFormDTO.ageRangeCheckBox.isChecked &&
-                    !statRequestFormDTO.genderCheckBox.isChecked)
+        val selectedStatsName = statsRequestFormDTO.statsNameSpinner.selectedItem as StatsName
+        if (selectedStatsName == StatsName.COMBINED || selectedStatsName == StatsName.SEPARATED) {
+            if (!statsRequestFormDTO.incomeRangeCheckBox.isChecked &&
+                    !statsRequestFormDTO.ageRangeCheckBox.isChecked &&
+                    !statsRequestFormDTO.genderCheckBox.isChecked)
                 throw MyException(NOT_SELECTED_FILTER)
         }
     }
