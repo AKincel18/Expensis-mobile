@@ -11,15 +11,13 @@
         android:id="@+id/editButtonProfile"
         android:layout_width="290dp"
         android:layout_height="62dp"
-        android:layout_marginTop="24dp"
         android:background="@drawable/round_button"
         android:text="@string/edit"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="@+id/passwordConfirmInput"
         app:layout_constraintHorizontal_bias="0.525"
         app:layout_constraintStart_toStartOf="@+id/passwordConfirmInput"
-        app:layout_constraintTop_toBottomOf="@+id/passwordConfirmInput"
-        app:layout_constraintVertical_bias="0.384" />
+        app:layout_constraintTop_toBottomOf="@+id/allowDataCollectionCheckBox" />
 
     <EditText
         android:id="@+id/emailInput"
@@ -167,4 +165,15 @@
         app:layout_constraintTop_toTopOf="parent"
         android:contentDescription="@string/logout"
         android:onClick="onLogoutClicked" />
+
+    <CheckBox
+        android:id="@+id/allowDataCollectionCheckBox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:text="@string/allow_data_collection"
+        app:layout_constraintEnd_toEndOf="@+id/passwordConfirmInput"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="@+id/passwordConfirmInput"
+        app:layout_constraintTop_toBottomOf="@+id/passwordConfirmInput" />
 </androidx.constraintlayout.widget.ConstraintLayout>

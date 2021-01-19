@@ -40,6 +40,7 @@
     <string name="income_range">Income range</string>
     <string name="age_range">Age range</string>
     <string name="show_statistics">Show statistics</string>
+    <string name="allow_data_collection">Allow data collection</string>
 
     <string-array name="gender_array">
         <item>Female</item>
