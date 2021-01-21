@@ -56,7 +56,7 @@ class Messages {
         /**
          * Menu view
          */
-        const val NO_PERMISSION = "No permission! Should allow data collection"
+        const val NO_PERMISSION = "Access denied! Allow data collection to use statistics."
 
     }
 }
