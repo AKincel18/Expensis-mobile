@@ -41,11 +41,8 @@ class ChartBuilder(private val context: Context, private val chart: BarChart,
         val groupNames: MutableList<String> = arrayListOf()
         var iterator = 0.0f
         for (statsResponseDTO in statsResponseDTOS) {
-            if (statsResponseDTO.userValue != 0.0f)
-                userDataEntries.add(BarEntry(iterator, statsResponseDTO.userValue))
-
-            if (statsResponseDTO.allValue != 0.0f)
-                allDataEntries.add(BarEntry(iterator, statsResponseDTO.allValue))
+            userDataEntries.add(BarEntry(iterator, statsResponseDTO.userValue))
+            allDataEntries.add(BarEntry(iterator, statsResponseDTO.allValue))
 
             groupNames.add(statsResponseDTO.nameValue)
             iterator += 3f
@@ -75,10 +72,8 @@ class ChartBuilder(private val context: Context, private val chart: BarChart,
         var userValue = 0.0f
         var iterator = 0.5f
         for (statsResponseDTO in statsResponseDTOS) {
-            if (statsResponseDTO.userValue != 0.0f)
-                userValue = statsResponseDTO.userValue
-            if (statsResponseDTO.allValue != 0.0f)
-                allDataEntries.add(BarEntry(iterator, statsResponseDTO.allValue))
+            userValue = statsResponseDTO.userValue
+            allDataEntries.add(BarEntry(iterator, statsResponseDTO.allValue))
             barNames.add(statsResponseDTO.nameValue)
             iterator += 1f
         }

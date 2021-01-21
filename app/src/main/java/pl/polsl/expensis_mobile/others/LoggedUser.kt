@@ -25,6 +25,9 @@ class LoggedUser {
     @SerializedName("income_range")
     var incomeRange: Int = 0
 
+    @SerializedName("allow_data_collection")
+    var allowDataCollection: Boolean = false
+
     /**
      * return logged user as object from shared pref where key is 'user' and value is json string
      *

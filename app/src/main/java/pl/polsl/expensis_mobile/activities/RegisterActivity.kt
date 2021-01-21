@@ -155,7 +155,8 @@ class RegisterActivity : AppCompatActivity(), LoadingAction {
             val userFormDTO = UserFormDTO(
                 emailInput, genderSpinner, dateInput,
                 monthlyLimitInput, incomeRangeSpinner,
-                passwordInput, passwordConfirmInput, getString(R.string.gender_hint)
+                passwordInput, passwordConfirmInput,
+                allowDataCollectionCheckBox, getString(R.string.gender_hint)
             )
 
             val userValidator = UserValidator(userFormDTO)
@@ -224,5 +225,6 @@ class RegisterActivity : AppCompatActivity(), LoadingAction {
         passwordConfirmInput.isEnabled = isEnabled
         registerButton.isEnabled = isEnabled
         LoginLinkText.isEnabled = isEnabled
+        allowDataCollectionCheckBox.isEnabled = isEnabled
     }
 }

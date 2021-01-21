@@ -24,6 +24,7 @@ class UserExtension : UserBase {
         incomeRange = (userDTO.incomeRangesSpinner.selectedItem as IncomeRange).id
         password = userDTO.passwordInput.text.toString()
         username = email
+        allowDataCollection = userDTO.allowDataCollection.isChecked
     }
 
     fun prepareToUpdatingExtension(userDTO: UserFormDTO) {

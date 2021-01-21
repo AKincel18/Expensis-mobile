@@ -59,7 +59,7 @@ class ProfileActivity : AppCompatActivity(), LoadingAction {
 
         if (loggedUser.monthlyLimit != null) //if null -> default hint
             monthlyLimitInput.hint = loggedUser.monthlyLimit.toString()
-
+        allowDataCollectionCheckBox.isChecked = loggedUser.allowDataCollection
         fillGenderSpinner()
         fetchIncomeRangesCallback()
     }
@@ -67,7 +67,8 @@ class ProfileActivity : AppCompatActivity(), LoadingAction {
     private fun onEditProfileButtonClicked(callback: ServerCallback<JSONObject>) {
         editButtonProfile.setOnClickListener {
             val userFormDTO = UserFormDTO(emailInput, genderSpinner, dateInput, monthlyLimitInput,
-                    incomeRangeSpinner, passwordInput, passwordConfirmInput, getString(R.string.monthly_limit))
+                    incomeRangeSpinner, passwordInput, passwordConfirmInput,
+                    allowDataCollectionCheckBox, getString(R.string.monthly_limit))
 
             val userValidator = UserValidator(userFormDTO)
             val validationResult = userValidator.validateEditProfileAction()
@@ -267,5 +268,6 @@ class ProfileActivity : AppCompatActivity(), LoadingAction {
         passwordConfirmInput.isEnabled = isEnabled
         editButtonProfile.isEnabled = isEnabled
         backButton.isEnabled = isEnabled
+        allowDataCollectionCheckBox.isEnabled = isEnabled
     }
 }

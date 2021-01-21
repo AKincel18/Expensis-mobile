@@ -53,5 +53,10 @@ class Messages {
          */
         const val NOT_SELECTED_FILTER = "Select at least one of the filters"
 
+        /**
+         * Menu view
+         */
+        const val NO_PERMISSION = "Access denied! Allow data collection to use statistics."
+
     }
 }

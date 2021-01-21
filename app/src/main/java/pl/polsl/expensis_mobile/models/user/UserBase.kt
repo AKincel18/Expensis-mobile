@@ -22,6 +22,9 @@ open class UserBase {
     @SerializedName("income_range")
     var incomeRange: Int = 0
 
+    @SerializedName("allow_data_collection")
+    var allowDataCollection: Boolean = false
+
     fun prepareToUpdatingBase(userDTO: UserFormDTO) {
         email = if (userDTO.emailInput.text.toString().isNotEmpty())
             userDTO.emailInput.text.toString()
@@ -42,5 +45,6 @@ open class UserBase {
                 null
         }
         incomeRange = (userDTO.incomeRangesSpinner.selectedItem as IncomeRange).id
+        allowDataCollection = userDTO.allowDataCollection.isChecked
     }
 }
