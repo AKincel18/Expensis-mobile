@@ -8,6 +8,7 @@ class Endpoint {
         const val AUTH = "auth/"
         const val REFRESH = "refresh/"
         const val EXPENSES = "expenses/"
+        const val EXPENSES_SUM = "expenses-sum/"
         const val CATEGORIES = "categories/"
         const val STATS = "stats/"
     }

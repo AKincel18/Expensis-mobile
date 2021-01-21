@@ -17,8 +17,8 @@ import org.json.JSONObject
 import pl.polsl.expensis_mobile.R
 import pl.polsl.expensis_mobile.dto.UserFormDTO
 import pl.polsl.expensis_mobile.models.IncomeRange
-import pl.polsl.expensis_mobile.models.user.UserExtension
 import pl.polsl.expensis_mobile.models.user.UserBase
+import pl.polsl.expensis_mobile.models.user.UserExtension
 import pl.polsl.expensis_mobile.others.LoadingAction
 import pl.polsl.expensis_mobile.others.LoggedUser
 import pl.polsl.expensis_mobile.rest.*
@@ -28,8 +28,8 @@ import pl.polsl.expensis_mobile.utils.Messages.Companion.PASSWORD_CHANGED
 import pl.polsl.expensis_mobile.utils.SharedPreferencesUtils
 import pl.polsl.expensis_mobile.utils.TokenUtils
 import pl.polsl.expensis_mobile.utils.Utils.Companion.getGsonWithLocalDate
-import pl.polsl.expensis_mobile.utils.Utils.Companion.parseFullDateToString
 import pl.polsl.expensis_mobile.utils.Utils.Companion.parseDateToString
+import pl.polsl.expensis_mobile.utils.Utils.Companion.parseFullDateToString
 import pl.polsl.expensis_mobile.validators.UserValidator
 import java.util.*
 
@@ -48,7 +48,7 @@ class ProfileActivity : AppCompatActivity(), LoadingAction {
         setFields()
     }
 
-    fun onLogoutClicked(view: View) {
+    fun onLogoutClicked(@Suppress("UNUSED_PARAMETER") view: View) {
         SharedPreferencesUtils.clearAllSharedPreferences()
         startActivity(Intent(this, LoginActivity::class.java))
     }
@@ -66,9 +66,17 @@ class ProfileActivity : AppCompatActivity(), LoadingAction {
 
     private fun onEditProfileButtonClicked(callback: ServerCallback<JSONObject>) {
         editButtonProfile.setOnClickListener {
-            val userFormDTO = UserFormDTO(emailInput, genderSpinner, dateInput, monthlyLimitInput,
-                    incomeRangeSpinner, passwordInput, passwordConfirmInput,
-                    allowDataCollectionCheckBox, getString(R.string.monthly_limit))
+            val userFormDTO = UserFormDTO(
+                emailInput,
+                genderSpinner,
+                dateInput,
+                monthlyLimitInput,
+                incomeRangeSpinner,
+                passwordInput,
+                passwordConfirmInput,
+                allowDataCollectionCheckBox,
+                getString(R.string.monthly_limit)
+            )
 
             val userValidator = UserValidator(userFormDTO)
             val validationResult = userValidator.validateEditProfileAction()
@@ -78,20 +86,23 @@ class ProfileActivity : AppCompatActivity(), LoadingAction {
                     val user = UserExtension()
                     user.prepareToUpdatingExtension(userFormDTO)
                     userJson = getGsonWithLocalDate().toJson(user)
-                    println(userJson)
                 } else {
                     val user = UserBase()
                     user.prepareToUpdatingBase(userFormDTO)
                     userJson = getGsonWithLocalDate().toJson(user)
-                    println(userJson)
                 }
 
                 val url = BASE_URL + Endpoint.USERS
                 val userJsonObject = JSONObject(userJson!!)
                 changeEditableFields(false)
                 showProgressBar()
-                val volleyService = VolleyService(this, callback)
-                volleyService.requestObject(Request.Method.PUT, url, userJsonObject)
+                VolleyService().requestObject(
+                    Request.Method.PUT,
+                    url,
+                    userJsonObject,
+                    callback,
+                    this
+                )
             } else {
                 showToast(validationResult.message)
             }
@@ -127,20 +138,20 @@ class ProfileActivity : AppCompatActivity(), LoadingAction {
 
     private fun pickDateListener() {
         val dateSetListener =
-                DatePickerDialog.OnDateSetListener { _, year, monthOfYear, dayOfMonth ->
-                    run {
-                        val stringDate = parseDateToString(year, monthOfYear, dayOfMonth)
-                        dateInput.text = stringDate
-                    }
+            DatePickerDialog.OnDateSetListener { _, year, monthOfYear, dayOfMonth ->
+                run {
+                    val stringDate = parseDateToString(year, monthOfYear, dayOfMonth)
+                    dateInput.text = stringDate
                 }
+            }
         dateInput.setOnClickListener {
             val dialog = DatePickerDialog(
-                    this,
-                    R.style.Theme_Expensismobile,
-                    dateSetListener,
-                    loggedUser.birthDate.year,
-                    loggedUser.birthDate.monthValue - 1,
-                    loggedUser.birthDate.dayOfMonth
+                this,
+                R.style.Theme_Expensismobile,
+                dateSetListener,
+                loggedUser.birthDate.year,
+                loggedUser.birthDate.monthValue - 1,
+                loggedUser.birthDate.dayOfMonth
             )
             val dateNow = Calendar.getInstance()
             dialog.datePicker.maxDate = dateNow.timeInMillis
@@ -153,8 +164,8 @@ class ProfileActivity : AppCompatActivity(), LoadingAction {
         val items = this.resources.getStringArray(R.array.gender_array)
 
         val adapter = ArrayAdapter(
-                this,
-                R.layout.spinner_gender_layout, R.id.genderSpinnerTextView, items
+            this,
+            R.layout.spinner_gender_layout, R.id.genderSpinnerTextView, items
         )
         adapter.setDropDownViewResource(R.layout.spinner_gender_layout)
         genderSpinner.adapter = adapter
@@ -211,8 +222,8 @@ class ProfileActivity : AppCompatActivity(), LoadingAction {
         val items = incomeRanges.toMutableList()
 
         val adapter = ArrayAdapter(
-                this,
-                R.layout.spinner_income_range_layout, R.id.incomeRangeSpinnerTextView, items.toList()
+            this,
+            R.layout.spinner_income_range_layout, R.id.incomeRangeSpinnerTextView, items.toList()
         )
         adapter.setDropDownViewResource(R.layout.spinner_income_range_layout)
         incomeRangeSpinner.adapter = adapter
@@ -220,11 +231,8 @@ class ProfileActivity : AppCompatActivity(), LoadingAction {
     }
 
     private fun fetchIncomeRanges(callback: ServerCallback<JSONArray>) {
-
         val url = BASE_URL + Endpoint.INCOME_RANGES
-        val volleyService = VolleyService(callback, this)
-        volleyService.requestArray(Request.Method.GET, url, null)
-
+        VolleyService().requestArray(Request.Method.GET, url, null, callback, this)
     }
 
     private fun errorAction(messageError: String?) {
@@ -237,8 +245,8 @@ class ProfileActivity : AppCompatActivity(), LoadingAction {
         val items = arrayListOf(IncomeRange(0, 0, 0)) //add only hint
 
         val adapter = ArrayAdapter(
-                this,
-                R.layout.spinner_income_range_layout, R.id.incomeRangeSpinnerTextView, items.toList()
+            this,
+            R.layout.spinner_income_range_layout, R.id.incomeRangeSpinnerTextView, items.toList()
         )
         adapter.setDropDownViewResource(R.layout.spinner_income_range_layout)
         incomeRangeSpinner.adapter = adapter

@@ -1,8 +1,10 @@
 package pl.polsl.expensis_mobile.utils
 
 import com.google.gson.Gson
+import pl.polsl.expensis_mobile.adapters.LocalDateTimeTypeAdapter
 import pl.polsl.expensis_mobile.adapters.LocalDateTypeAdapter
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeParseException
 
@@ -29,6 +31,14 @@ class Utils {
             return Gson()
                 .newBuilder()
                 .registerTypeAdapter(LocalDate::class.java, LocalDateTypeAdapter().nullSafe())
+                .create()
+        }
+
+        fun getGsonWithLocalDateAndLocalDateTime(): Gson {
+            return Gson()
+                .newBuilder()
+                .registerTypeAdapter(LocalDate::class.java, LocalDateTypeAdapter().nullSafe())
+                .registerTypeAdapter(LocalDateTime::class.java, LocalDateTimeTypeAdapter().nullSafe())
                 .create()
         }
     }

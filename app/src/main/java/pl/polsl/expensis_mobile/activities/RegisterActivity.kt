@@ -13,8 +13,6 @@ import com.android.volley.VolleyError
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import kotlinx.android.synthetic.main.register_activity.*
-import kotlinx.android.synthetic.main.register_activity.emailInput
-import kotlinx.android.synthetic.main.register_activity.passwordInput
 import org.json.JSONArray
 import org.json.JSONObject
 import pl.polsl.expensis_mobile.R
@@ -45,7 +43,7 @@ class RegisterActivity : AppCompatActivity(), LoadingAction {
     }
 
     private fun fetchIncomeRangesCallback() {
-        fetchIncomeRanges(object: ServerCallback<JSONArray> {
+        fetchIncomeRanges(object : ServerCallback<JSONArray> {
             override fun onSuccess(response: JSONArray) {
 
                 val type = object : TypeToken<List<IncomeRange>>() {}.type
@@ -76,11 +74,8 @@ class RegisterActivity : AppCompatActivity(), LoadingAction {
 
 
     private fun fetchIncomeRanges(callback: ServerCallback<JSONArray>) {
-
         val url = BASE_URL + Endpoint.INCOME_RANGES
-        val volleyService = VolleyService(callback, this)
-        volleyService.requestArray(Request.Method.GET, url, null)
-
+        VolleyService().requestArray(Request.Method.GET, url, null, callback, this)
     }
 
     private fun fillIncomeRangeSpinner(incomeRanges: List<IncomeRange>) {
@@ -99,7 +94,7 @@ class RegisterActivity : AppCompatActivity(), LoadingAction {
     }
 
     private fun initIncomeRangeSpinnerHint() {
-        val items =  arrayListOf(IncomeRange(0, 0, 0)) //add only hint
+        val items = arrayListOf(IncomeRange(0, 0, 0)) //add only hint
 
         val adapter = ArrayAdapter(
             this,
@@ -168,8 +163,13 @@ class RegisterActivity : AppCompatActivity(), LoadingAction {
                 val userJsonObject = JSONObject(userJson)
                 changeEditableFields(false)
                 showProgressBar()
-                val volleyService = VolleyService(this, callback)
-                volleyService.requestObject(Request.Method.POST, url, userJsonObject)
+                VolleyService().requestObject(
+                    Request.Method.POST,
+                    url,
+                    userJsonObject,
+                    callback,
+                    this
+                )
             } else {
                 Toast.makeText(this, validationResult.message, Toast.LENGTH_SHORT).show()
             }
@@ -178,7 +178,7 @@ class RegisterActivity : AppCompatActivity(), LoadingAction {
     }
 
     private fun registerUserCallback() {
-        registerUser(object: ServerCallback<JSONObject> {
+        registerUser(object : ServerCallback<JSONObject> {
             override fun onSuccess(response: JSONObject) {
                 val intent = Intent(applicationContext, LoginActivity::class.java)
                 intent.putExtra(IntentKeys.REGISTERED, Messages.SUCCESSFULLY_REGISTERED)
@@ -201,7 +201,7 @@ class RegisterActivity : AppCompatActivity(), LoadingAction {
         Toast.makeText(this, messageError, Toast.LENGTH_SHORT).show()
     }
 
-    fun onLoginClicked(view: View) {
+    fun onLoginClicked(@Suppress("UNUSED_PARAMETER") view: View) {
         startActivity(Intent(this, LoginActivity::class.java))
     }
 

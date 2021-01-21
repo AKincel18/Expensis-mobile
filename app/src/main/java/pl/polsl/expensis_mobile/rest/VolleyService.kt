@@ -8,32 +8,41 @@ import org.json.JSONObject
 import pl.polsl.expensis_mobile.rest.requests.CustomArrayRequest
 import pl.polsl.expensis_mobile.rest.requests.CustomJsonArrayRequest
 import pl.polsl.expensis_mobile.rest.requests.CustomJsonRequest
+import pl.polsl.expensis_mobile.rest.requests.CustomStringRequest
 
 class VolleyService() {
 
-    private var callbackArray: ServerCallback<JSONArray>? = null
-    private var callbackObject: ServerCallback<JSONObject>? = null
-    lateinit var context: Context
-
-    fun requestArray(method: Int, url: String, jsonRequest: JSONArray?) {
+    fun requestArray(
+        method: Int,
+        url: String,
+        jsonRequest: JSONArray?,
+        callback: ServerCallback<JSONArray>,
+        context: Context
+    ) {
         val objectRequest = CustomArrayRequest(method, url, jsonRequest,
             Response.Listener { response ->
-                callbackArray?.onSuccess(response)
+                callback.onSuccess(response)
             },
             Response.ErrorListener { error ->
-                callbackArray?.onFailure(error)
+                callback.onFailure(error)
             }
         )
         VolleySingleton.getInstance(context).addToRequestQueue(objectRequest)
     }
 
-    fun requestObject(method: Int, url: String, jsonRequest: JSONObject?) {
+    fun requestObject(
+        method: Int,
+        url: String,
+        jsonRequest: JSONObject?,
+        callback: ServerCallback<JSONObject>,
+        context: Context
+    ) {
         val objectRequest = CustomJsonRequest(method, url, jsonRequest,
             Response.Listener { response ->
-                callbackObject?.onSuccess(response)
+                callback.onSuccess(response)
             },
             Response.ErrorListener { error ->
-                callbackObject?.onFailure(error)
+                callback.onFailure(error)
             }
         )
         VolleySingleton.getInstance(context).addToRequestQueue(objectRequest)
@@ -43,39 +52,57 @@ class VolleyService() {
      * request -> jsonObject
      * response -> jsonArray
      */
-    fun requestMixed(method: Int, url: String, jsonRequest: JSONObject?) {
+    fun requestMixed(
+        method: Int,
+        url: String,
+        jsonRequest: JSONObject?,
+        callback: ServerCallback<JSONArray>,
+        context: Context
+    ) {
         val objectRequest = CustomJsonArrayRequest(method, url, jsonRequest,
-                Response.Listener {
-                    response -> callbackArray?.onSuccess(response!!)
-                },
-                Response.ErrorListener {
-                    error -> callbackArray?.onFailure(error)
-                }
+            Response.Listener { response ->
+                callback.onSuccess(response!!)
+            },
+            Response.ErrorListener { error ->
+                callback.onFailure(error)
+            }
         )
         VolleySingleton.getInstance(context).addToRequestQueue(objectRequest)
 
     }
 
-    fun requestObjectNoAuth(method: Int, url: String, jsonRequest: JSONObject?) {
+    fun requestObjectNoAuth(
+        method: Int,
+        url: String,
+        jsonRequest: JSONObject?,
+        callback: ServerCallback<JSONObject>,
+        context: Context
+    ) {
         val objectRequest = JsonObjectRequest(method, url, jsonRequest,
             { response ->
-                callbackObject?.onSuccess(response)
+                callback.onSuccess(response)
             },
             { error ->
-                callbackObject?.onFailure(error)
+                callback.onFailure(error)
             }
         )
         VolleySingleton.getInstance(context).addToRequestQueue(objectRequest)
     }
 
-
-    constructor(callback: ServerCallback<JSONArray>, context: Context) : this() {
-        this.callbackArray = callback
-        this.context = context
+    fun requestString(
+        method: Int,
+        url: String,
+        callback: ServerCallback<String>,
+        context: Context
+    ) {
+        val stringRequest = CustomStringRequest(method, url,
+            Response.Listener { response ->
+                callback.onSuccess(response)
+            },
+            Response.ErrorListener { error ->
+                callback.onFailure(error)
+            })
+        VolleySingleton.getInstance(context).addToRequestQueue(stringRequest)
     }
 
-    constructor(context: Context, callback: ServerCallback<JSONObject>) : this() {
-        this.context = context
-        this.callbackObject = callback
-    }
 }

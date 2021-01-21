@@ -52,13 +52,12 @@ class LoginActivity : AppCompatActivity(), LoadingAction {
         intent.extras
         if (intent.hasExtra(IntentKeys.REGISTERED)) {
             showToast(intent.getStringExtra(IntentKeys.REGISTERED))
-        }
-        else if (intent.hasExtra(IntentKeys.RESPONSE_ERROR)) {
+        } else if (intent.hasExtra(IntentKeys.RESPONSE_ERROR)) {
             showToast(intent.getStringExtra(IntentKeys.RESPONSE_ERROR))
         }
     }
 
-    fun onRegisterClicked(view: View) {
+    fun onRegisterClicked(@Suppress("UNUSED_PARAMETER") view: View) {
         startActivity(Intent(this, RegisterActivity::class.java))
     }
 
@@ -75,8 +74,13 @@ class LoginActivity : AppCompatActivity(), LoadingAction {
                 val url = BASE_URL + Endpoint.AUTH
                 showProgressBar()
                 changeEditableFields(false)
-                val volleyService = VolleyService(this, callback)
-                volleyService.requestObject(Request.Method.POST, url, userJsonObject)
+                VolleyService().requestObject(
+                    Request.Method.POST,
+                    url,
+                    userJsonObject,
+                    callback,
+                    this
+                )
             } else {
                 Toast.makeText(this, validationResult.message, Toast.LENGTH_SHORT).show()
             }
@@ -122,12 +126,13 @@ class LoginActivity : AppCompatActivity(), LoadingAction {
         println("Rest response = $response")
     }
 
-    private fun refreshTokenCallback(){
-        refreshToken(object: ServerCallback<JSONObject> {
+    private fun refreshTokenCallback() {
+        refreshToken(object : ServerCallback<JSONObject> {
             override fun onSuccess(response: JSONObject) {
                 storeTokens(response.get(accessTokenConst) as String, refreshToken, null)
                 startMenuActivity()
             }
+
             override fun onFailure(error: VolleyError) {
                 onStartActivity()
                 refreshTokenOnFailure(error)
