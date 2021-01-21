@@ -114,6 +114,7 @@ class ExpensesActivity : AppCompatActivity(), LoadingAction, NumberPicker.OnValu
                 val expenses =
                     getGsonWithLocalDate().fromJson<List<Expense>>(response.toString(), type)
                 val expensesAdapter = ExpensesAdapter { expense -> adapterOnClick(expense) }
+                noExpensesText.visibility = if (expenses.isEmpty()) View.VISIBLE else View.GONE
                 recycler_view.adapter = expensesAdapter
                 expensesAdapter.submitList(expenses)
                 expensesProgressBar.visibility = View.INVISIBLE

@@ -45,6 +45,7 @@
     <string name="expenses_sum">0</string>
     <string name="current_month_expenses">Current month: </string>
     <string name="expenses_text_2">expenses:  </string>
+    <string name="no_expenses_info">There are no expenses, add some!</string>
 
     <string-array name="gender_array">
         <item>Female</item>
