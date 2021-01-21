@@ -42,8 +42,8 @@ class StatsActivity : AppCompatActivity(), LoadingAction {
 
     private fun initSpinner() {
         val adapter = ArrayAdapter<StatsName>(
-                this, R.layout.spinner_stats_name_layout,
-                R.id.statsNameSpinnerTextView, StatsName.values()
+            this, R.layout.spinner_stats_name_layout,
+            R.id.statsNameSpinnerTextView, StatsName.values()
         )
         adapter.setDropDownViewResource(R.layout.spinner_stats_name_layout)
         statsNameSpinner.adapter = adapter
@@ -54,7 +54,10 @@ class StatsActivity : AppCompatActivity(), LoadingAction {
             override fun onSuccess(response: JSONArray) {
                 val intent = Intent(applicationContext, DisplayStatsActivity::class.java)
                 intent.putExtra(IntentKeys.DATA_STATS, response.toString())
-                intent.putExtra(IntentKeys.DATA_NAME, (statsNameSpinner.selectedItem as StatsName).ordinal)
+                intent.putExtra(
+                    IntentKeys.DATA_NAME,
+                    (statsNameSpinner.selectedItem as StatsName).ordinal
+                )
                 startActivity(intent)
             }
 
@@ -76,9 +79,9 @@ class StatsActivity : AppCompatActivity(), LoadingAction {
         TokenUtils.refreshToken(object : ServerCallback<JSONObject> {
             override fun onSuccess(response: JSONObject) {
                 SharedPreferencesUtils.storeTokens(
-                        response.get(SharedPreferencesUtils.accessTokenConst) as String,
-                        TokenUtils.refreshToken,
-                        null
+                    response.get(SharedPreferencesUtils.accessTokenConst) as String,
+                    TokenUtils.refreshToken,
+                    null
                 )
                 startActivity(Intent(applicationContext, MenuActivity::class.java))
             }
@@ -93,26 +96,25 @@ class StatsActivity : AppCompatActivity(), LoadingAction {
     private fun onShowStatClicked(callback: ServerCallback<JSONArray>) {
         showStatsButton.setOnClickListener {
             val statForm = StatsRequestFormDTO(
-                    statsNameSpinner, incomeRangeCheckBox, ageRangeCheckBox, genderCheckBox
+                statsNameSpinner, incomeRangeCheckBox, ageRangeCheckBox, genderCheckBox
             )
             val statValidator = StatsValidator(statForm)
             val validationResult = statValidator.validateStats()
             if (validationResult.isValid) {
                 val statRequest = StatsRequestDTO(
-                        statsNameSpinner.selectedItem.toString(),
-                        StatsFilterDTO(
-                                incomeRangeCheckBox.isChecked,
-                                ageRangeCheckBox.isChecked,
-                                genderCheckBox.isChecked
-                        )
+                    statsNameSpinner.selectedItem.toString(),
+                    StatsFilterDTO(
+                        incomeRangeCheckBox.isChecked,
+                        ageRangeCheckBox.isChecked,
+                        genderCheckBox.isChecked
+                    )
                 )
                 val jsonObject = JSONObject(Gson().toJson(statRequest))
                 println(jsonObject.toString())
                 val url = BASE_URL + Endpoint.STATS
                 changeEditableFields(false)
                 showProgressBar()
-                val volleyService = VolleyService(callback, this)
-                volleyService.requestMixed(Request.Method.POST, url, jsonObject)
+                VolleyService().requestMixed(Request.Method.POST, url, jsonObject, callback, this)
             } else {
                 Toast.makeText(this, validationResult.message, Toast.LENGTH_SHORT).show()
             }
@@ -123,7 +125,12 @@ class StatsActivity : AppCompatActivity(), LoadingAction {
     private fun onItemSelectedSpinnerListener() {
         statsNameSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onNothingSelected(parent: AdapterView<*>?) {}
-            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+            override fun onItemSelected(
+                parent: AdapterView<*>?,
+                view: View?,
+                position: Int,
+                id: Long
+            ) {
                 if (statsNameSpinner.selectedItem == StatsName.SEPARATED) {
                     incomeRangeCheckBox.isChecked = false
                     ageRangeCheckBox.isChecked = false

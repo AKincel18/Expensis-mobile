@@ -22,6 +22,7 @@ import pl.polsl.expensis_mobile.dto.ExpenseFormDTO
 import pl.polsl.expensis_mobile.models.Category
 import pl.polsl.expensis_mobile.others.DecimalDigitsInputFilter
 import pl.polsl.expensis_mobile.others.LoadingAction
+import pl.polsl.expensis_mobile.others.LoggedUser
 import pl.polsl.expensis_mobile.rest.*
 import pl.polsl.expensis_mobile.utils.Messages
 import pl.polsl.expensis_mobile.utils.Utils
@@ -57,7 +58,7 @@ class AddExpenseActivity : AppCompatActivity(), LoadingAction {
         addExpenseValue.isEnabled = isEnabled
     }
 
-    fun onGoBackClicked(view: View) {
+    fun onGoBackClicked(@Suppress("UNUSED_PARAMETER") view: View) {
         onBackPressed()
     }
 
@@ -100,11 +101,10 @@ class AddExpenseActivity : AppCompatActivity(), LoadingAction {
 
     private fun fetchCategories(callback: ServerCallback<JSONArray>) {
         val url = BASE_URL + Endpoint.CATEGORIES
-        val volleyService = VolleyService(callback, this)
-        volleyService.requestArray(Request.Method.GET, url, null)
+        VolleyService().requestArray(Request.Method.GET, url, null, callback, this)
     }
 
-    fun onCalendarClicked(view: View) {
+    fun onCalendarClicked(@Suppress("UNUSED_PARAMETER") view: View) {
         val dateSetListener =
             DatePickerDialog.OnDateSetListener { _, year, monthOfYear, dayOfMonth ->
                 run {
@@ -123,12 +123,16 @@ class AddExpenseActivity : AppCompatActivity(), LoadingAction {
             dateNow.get(Calendar.DAY_OF_MONTH)
 
         )
-
         dialog.datePicker.maxDate = dateNow.timeInMillis
+
+        val loggedUserDateJoined = LoggedUser().serialize()!!.dateJoined
+        val firstDayOfRegisteredMonth = Calendar.getInstance()
+        firstDayOfRegisteredMonth.set(loggedUserDateJoined.year, loggedUserDateJoined.monthValue-1, 1)
+        dialog.datePicker.minDate = firstDayOfRegisteredMonth.timeInMillis
         dialog.show()
     }
 
-    fun onAddExpenseClicked(view: View) {
+    fun onAddExpenseClicked(@Suppress("UNUSED_PARAMETER") view: View) {
         val expenseFormDTO = ExpenseFormDTO(
             expenseTitleAdd,
             expenseDescriptionAdd,
@@ -172,8 +176,7 @@ class AddExpenseActivity : AppCompatActivity(), LoadingAction {
 
     private fun postExpense(expenseJsonObject: JSONObject, callback: ServerCallback<JSONObject>) {
         val url = BASE_URL + Endpoint.EXPENSES
-        val volleyService = VolleyService(this, callback)
-        volleyService.requestObject(Request.Method.POST, url, expenseJsonObject)
+        VolleyService().requestObject(Request.Method.POST, url, expenseJsonObject, callback, this)
     }
 
     private fun showToast(messageError: String?) {

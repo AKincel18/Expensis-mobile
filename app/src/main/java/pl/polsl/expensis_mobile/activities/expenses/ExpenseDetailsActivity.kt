@@ -145,8 +145,7 @@ class ExpenseDetailsActivity : AppCompatActivity(), LoadingAction {
 
     private fun fetchCategories(callback: ServerCallback<JSONArray>) {
         val url = BASE_URL + Endpoint.CATEGORIES
-        val volleyService = VolleyService(callback, this)
-        volleyService.requestArray(Request.Method.GET, url, null)
+        VolleyService().requestArray(Request.Method.GET, url, null, callback, this)
     }
 
     private fun errorAction(messageError: String?) {
@@ -197,8 +196,7 @@ class ExpenseDetailsActivity : AppCompatActivity(), LoadingAction {
 
     private fun requestDeleteExpense(callback: ServerCallback<JSONObject>) {
         val url = BASE_URL + Endpoint.EXPENSES + expense.id + '/'
-        val volleyService = VolleyService(this, callback)
-        volleyService.requestObject(Request.Method.DELETE, url, null)
+        VolleyService().requestObject(Request.Method.DELETE, url, null, callback, this)
     }
 
     fun onEditClicked(@Suppress("UNUSED_PARAMETER") view: View) {
@@ -255,8 +253,7 @@ class ExpenseDetailsActivity : AppCompatActivity(), LoadingAction {
 
     private fun putExpense(expenseJsonObject: JSONObject, callback: ServerCallback<JSONObject>) {
         val url = BASE_URL + Endpoint.EXPENSES + expense.id + '/'
-        val volleyService = VolleyService(this, callback)
-        volleyService.requestObject(Request.Method.PUT, url, expenseJsonObject)
+        VolleyService().requestObject(Request.Method.PUT, url, expenseJsonObject, callback, this)
     }
 
     fun onCreationDateClicked(@Suppress("UNUSED_PARAMETER") view: View) {

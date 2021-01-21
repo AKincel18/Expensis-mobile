@@ -28,14 +28,19 @@ class TokenUtils {
             refreshToken = getRefreshToken() ?: return
             val url = BASE_URL + Endpoint.REFRESH
             val refreshTokenJsonObject = JSONObject(Gson().toJson(RefreshTokenDTO(refreshToken)))
-            val volleyService = VolleyService(context, callback)
-            volleyService.requestObjectNoAuth(Request.Method.POST, url, refreshTokenJsonObject)
+            VolleyService().requestObjectNoAuth(
+                Request.Method.POST,
+                url,
+                refreshTokenJsonObject,
+                callback,
+                context
+            )
         }
 
         fun refreshTokenOnFailure(error: VolleyError) {
             println("Cannot refresh token, error:  $error")
             clearAllSharedPreferences()
-            Toast.makeText(context, SESSION_EXPIRED ,Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, SESSION_EXPIRED, Toast.LENGTH_SHORT).show()
         }
     }
 }

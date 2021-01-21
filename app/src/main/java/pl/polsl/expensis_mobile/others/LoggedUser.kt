@@ -4,6 +4,7 @@ import com.google.gson.annotations.SerializedName
 import pl.polsl.expensis_mobile.utils.SharedPreferencesUtils
 import pl.polsl.expensis_mobile.utils.Utils
 import java.time.LocalDate
+import java.time.LocalDateTime
 
 class LoggedUser {
 
@@ -28,14 +29,17 @@ class LoggedUser {
     @SerializedName("allow_data_collection")
     var allowDataCollection: Boolean = false
 
+    @SerializedName("date_joined")
+    var dateJoined: LocalDateTime = LocalDateTime.now()
+
     /**
      * return logged user as object from shared pref where key is 'user' and value is json string
      *
      */
     fun serialize(): LoggedUser? {
-        return Utils.getGsonWithLocalDate().fromJson<LoggedUser>(
-                SharedPreferencesUtils.getUser(),
-                LoggedUser::class.java
+        return Utils.getGsonWithLocalDateAndLocalDateTime().fromJson<LoggedUser>(
+            SharedPreferencesUtils.getUser(),
+            LoggedUser::class.java
         )
     }
 
