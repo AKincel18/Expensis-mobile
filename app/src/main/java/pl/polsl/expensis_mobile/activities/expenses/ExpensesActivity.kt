@@ -226,7 +226,7 @@ class ExpensesActivity : AppCompatActivity(), LoadingAction, NumberPicker.OnValu
         if (yearPicker.value == currentDate.year && monthPicker.value == currentDate.monthValue) {
             dateText.text = this.resources.getString(R.string.current_month_expenses)
         } else {
-            dateText.text = monthNames[monthPicker.value-1] + " " + yearPicker.value
+            dateText.text = monthNames[monthPicker.value-1] + " " + yearPicker.value + ": "
         }
         fetchExpensesSumCallback()
         fetchExpensesCallback()

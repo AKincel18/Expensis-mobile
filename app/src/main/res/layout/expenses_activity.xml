@@ -27,8 +27,8 @@
         android:textAlignment="center"
         android:textColor="@color/primaryColor"
         android:textSize="30sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/filterButton"
+        app:layout_constraintStart_toEndOf="@+id/backButton"
         app:layout_constraintTop_toTopOf="parent" />
 
     <ProgressBar
@@ -45,13 +45,13 @@
     <androidx.recyclerview.widget.RecyclerView
         app:layout_constraintHorizontal_chainStyle="packed"
         android:id="@+id/recycler_view"
-        android:layout_width="407dp"
+        android:layout_width="match_parent"
         android:layout_height="0dp"
         app:layoutManager="LinearLayoutManager"
         app:layout_constraintTop_toBottomOf="@+id/dateText"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.333"
+        app:layout_constraintHorizontal_bias="0.5"
         android:layout_marginTop="15dp"
         app:layout_constraintStart_toStartOf="parent" />
 
@@ -109,26 +109,13 @@
         android:id="@+id/dateText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="15dp"
         android:text="@string/current_month_expenses"
         android:textColor="@color/white"
         android:textSize="22sp"
+        android:layout_marginStart="40dp"
         android:textStyle="bold|italic"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/applyFilterButton" />
-
-    <TextView
-        android:id="@+id/expensesText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="5dp"
-        android:text="@string/expenses_text_2"
-        android:textColor="@color/white"
-        android:textSize="22sp"
-        android:textStyle="bold|italic"
-        app:layout_constraintBottom_toBottomOf="@+id/dateText"
-        app:layout_constraintStart_toEndOf="@+id/dateText"
-        app:layout_constraintTop_toTopOf="@+id/dateText" />
 
     <TextView
         android:id="@+id/expensesSumText"
@@ -139,7 +126,7 @@
         android:textColor="#C53333"
         android:textSize="22sp"
         android:textStyle="bold|italic"
-        app:layout_constraintBottom_toBottomOf="@+id/expensesText"
-        app:layout_constraintStart_toEndOf="@+id/expensesText"
-        app:layout_constraintTop_toTopOf="@+id/expensesText" />
+        app:layout_constraintBottom_toBottomOf="@+id/dateText"
+        app:layout_constraintStart_toEndOf="@+id/dateText"
+        app:layout_constraintTop_toTopOf="@+id/dateText" />
 </androidx.constraintlayout.widget.ConstraintLayout>
