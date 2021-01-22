@@ -14,7 +14,6 @@ import kotlinx.android.synthetic.main.stats_activity.*
 import org.json.JSONArray
 import org.json.JSONObject
 import pl.polsl.expensis_mobile.R
-import pl.polsl.expensis_mobile.activities.LoginActivity
 import pl.polsl.expensis_mobile.activities.MenuActivity
 import pl.polsl.expensis_mobile.dto.stats.StatsFilterDTO
 import pl.polsl.expensis_mobile.dto.stats.StatsRequestDTO
@@ -50,7 +49,11 @@ class StatsActivity : AppCompatActivity(), LoadingAction {
     }
 
     private fun onShowStatClickedCallback() {
-        onShowStatClicked(object : ServerCallback<JSONArray> {
+        onShowStatClicked(getStatsCallback())
+    }
+
+    private fun getStatsCallback() :  ServerCallback<JSONArray> {
+        return object : ServerCallback<JSONArray> {
             override fun onSuccess(response: JSONArray) {
                 val intent = Intent(applicationContext, DisplayStatsActivity::class.java)
                 intent.putExtra(IntentKeys.DATA_STATS, response.toString())
@@ -64,7 +67,8 @@ class StatsActivity : AppCompatActivity(), LoadingAction {
             override fun onFailure(error: VolleyError) {
                 if (error.networkResponse != null && error.networkResponse.statusCode == 403) {
                     refreshTokenCallback()
-                } else {
+                }
+                else {
                     val serverError = ServerErrorResponse(error)
                     val messageError = serverError.getErrorResponse()
                     statsProgressBar.visibility = View.INVISIBLE
@@ -72,7 +76,39 @@ class StatsActivity : AppCompatActivity(), LoadingAction {
                     Toast.makeText(applicationContext, messageError, Toast.LENGTH_SHORT).show()
                 }
             }
-        })
+        }
+    }
+
+    private fun onShowStatClicked(callback: ServerCallback<JSONArray>) {
+        showStatsButton.setOnClickListener {
+            statsRequest(callback)
+        }
+    }
+
+    private fun statsRequest(callback: ServerCallback<JSONArray>) {
+        val statForm = StatsRequestFormDTO(
+            statsNameSpinner, incomeRangeCheckBox, ageRangeCheckBox, genderCheckBox
+        )
+        val statValidator = StatsValidator(statForm)
+        val validationResult = statValidator.validateStats()
+        if (validationResult.isValid) {
+            val statRequest = StatsRequestDTO(
+                statsNameSpinner.selectedItem.toString(),
+                StatsFilterDTO(
+                    incomeRangeCheckBox.isChecked,
+                    ageRangeCheckBox.isChecked,
+                    genderCheckBox.isChecked
+                )
+            )
+            val jsonObject = JSONObject(Gson().toJson(statRequest))
+            println(jsonObject.toString())
+            val url = BASE_URL + Endpoint.STATS
+            changeEditableFields(false)
+            showProgressBar()
+            VolleyService().requestMixed(Request.Method.POST, url, jsonObject, callback, this)
+        } else {
+            Toast.makeText(this, validationResult.message, Toast.LENGTH_SHORT).show()
+        }
     }
 
     private fun refreshTokenCallback() {
@@ -83,44 +119,15 @@ class StatsActivity : AppCompatActivity(), LoadingAction {
                     TokenUtils.refreshToken,
                     null
                 )
-                startActivity(Intent(applicationContext, MenuActivity::class.java))
+                statsRequest(getStatsCallback())
             }
 
             override fun onFailure(error: VolleyError) {
                 TokenUtils.refreshTokenOnFailure(error)
-                startActivity(Intent(applicationContext, LoginActivity::class.java))
             }
         })
     }
 
-    private fun onShowStatClicked(callback: ServerCallback<JSONArray>) {
-        showStatsButton.setOnClickListener {
-            val statForm = StatsRequestFormDTO(
-                statsNameSpinner, incomeRangeCheckBox, ageRangeCheckBox, genderCheckBox
-            )
-            val statValidator = StatsValidator(statForm)
-            val validationResult = statValidator.validateStats()
-            if (validationResult.isValid) {
-                val statRequest = StatsRequestDTO(
-                    statsNameSpinner.selectedItem.toString(),
-                    StatsFilterDTO(
-                        incomeRangeCheckBox.isChecked,
-                        ageRangeCheckBox.isChecked,
-                        genderCheckBox.isChecked
-                    )
-                )
-                val jsonObject = JSONObject(Gson().toJson(statRequest))
-                println(jsonObject.toString())
-                val url = BASE_URL + Endpoint.STATS
-                changeEditableFields(false)
-                showProgressBar()
-                VolleyService().requestMixed(Request.Method.POST, url, jsonObject, callback, this)
-            } else {
-                Toast.makeText(this, validationResult.message, Toast.LENGTH_SHORT).show()
-            }
-
-        }
-    }
 
     private fun onItemSelectedSpinnerListener() {
         statsNameSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {

@@ -14,7 +14,6 @@ import kotlinx.android.synthetic.main.register_activity.*
 import org.json.JSONArray
 import org.json.JSONObject
 import pl.polsl.expensis_mobile.R
-import pl.polsl.expensis_mobile.activities.LoginActivity
 import pl.polsl.expensis_mobile.activities.MenuActivity
 import pl.polsl.expensis_mobile.adapters.ExpensesAdapter
 import pl.polsl.expensis_mobile.models.Expense
@@ -108,7 +107,11 @@ class ExpensesActivity : AppCompatActivity(), LoadingAction, NumberPicker.OnValu
     }
 
     private fun fetchExpensesCallback() {
-        fetchExpenses(object : ServerCallback<JSONArray> {
+        fetchExpenses(getFetchExpensesCallback())
+    }
+
+    private fun getFetchExpensesCallback() : ServerCallback<JSONArray> {
+        return object : ServerCallback<JSONArray> {
             override fun onSuccess(response: JSONArray) {
                 val type = object : TypeToken<List<Expense>>() {}.type
                 val expenses =
@@ -122,7 +125,7 @@ class ExpensesActivity : AppCompatActivity(), LoadingAction, NumberPicker.OnValu
 
             override fun onFailure(error: VolleyError) {
                 if (error.networkResponse != null && error.networkResponse.statusCode == 403) {
-                    refreshTokenCallback()
+                    refreshTokenCallback(true)
                 } else {
                     val serverError = ServerErrorResponse(error)
                     val messageError = serverError.getErrorResponse()
@@ -130,23 +133,10 @@ class ExpensesActivity : AppCompatActivity(), LoadingAction, NumberPicker.OnValu
                     handleError(messageError)
                 }
             }
-        })
+        }
     }
 
-    private fun fetchExpensesSumCallback() {
-        fetchExpensesSum(object: ServerCallback<String> {
-            @SuppressLint("SetTextI18n")
-            override fun onSuccess(response: String) {
-                expensesSumText.text = "-$response"
-            }
-
-            override fun onFailure(error: VolleyError) {
-                expensesSumText.text = "0"
-            }
-        })
-    }
-
-    private fun refreshTokenCallback() {
+    private fun refreshTokenCallback(isFetchExpenseRequest: Boolean) {
         TokenUtils.refreshToken(object : ServerCallback<JSONObject> {
             override fun onSuccess(response: JSONObject) {
                 SharedPreferencesUtils.storeTokens(
@@ -154,14 +144,42 @@ class ExpensesActivity : AppCompatActivity(), LoadingAction, NumberPicker.OnValu
                     TokenUtils.refreshToken,
                     null
                 )
-                startActivity(Intent(applicationContext, MenuActivity::class.java))
+                if (isFetchExpenseRequest) {
+                    fetchExpenses(getFetchExpensesCallback())
+                }
+                else {
+                    fetchExpensesSum(getFetchExpensesSumCallback())
+                }
             }
 
             override fun onFailure(error: VolleyError) {
                 TokenUtils.refreshTokenOnFailure(error)
-                startActivity(Intent(applicationContext, LoginActivity::class.java))
             }
         })
+    }
+
+    private fun fetchExpensesSumCallback() {
+        fetchExpensesSum(getFetchExpensesSumCallback())
+    }
+
+    private fun getFetchExpensesSumCallback() : ServerCallback<String> {
+        return object: ServerCallback<String> {
+            @SuppressLint("SetTextI18n")
+            override fun onSuccess(response: String) {
+                expensesSumText.text = "-$response"
+            }
+
+            override fun onFailure(error: VolleyError) {
+                if (error.networkResponse != null && error.networkResponse.statusCode == 403) {
+                    refreshTokenCallback(false)
+                } else {
+                    val serverError = ServerErrorResponse(error)
+                    val messageError = serverError.getErrorResponse()
+                    expensesProgressBar.visibility = View.INVISIBLE
+                    handleError(messageError)
+                }
+            }
+        }
     }
 
     private fun fetchExpenses(callback: ServerCallback<JSONArray>) {

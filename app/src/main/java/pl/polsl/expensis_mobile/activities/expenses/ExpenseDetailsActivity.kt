@@ -15,6 +15,7 @@ import com.android.volley.VolleyError
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import kotlinx.android.synthetic.main.expense_details_activity.*
+import kotlinx.android.synthetic.main.expenses_activity.*
 import org.json.JSONArray
 import org.json.JSONObject
 import pl.polsl.expensis_mobile.R
@@ -26,9 +27,7 @@ import pl.polsl.expensis_mobile.models.Expense
 import pl.polsl.expensis_mobile.others.DecimalDigitsInputFilter
 import pl.polsl.expensis_mobile.others.LoadingAction
 import pl.polsl.expensis_mobile.rest.*
-import pl.polsl.expensis_mobile.utils.IntentKeys
-import pl.polsl.expensis_mobile.utils.Messages
-import pl.polsl.expensis_mobile.utils.Utils
+import pl.polsl.expensis_mobile.utils.*
 import pl.polsl.expensis_mobile.validators.ExpenseValidator
 import java.util.*
 
@@ -38,6 +37,7 @@ class ExpenseDetailsActivity : AppCompatActivity(), LoadingAction {
     private lateinit var expense: Expense
     private lateinit var editableSpinnerBackground: Drawable
     private lateinit var editableTextViewBackground: Drawable
+    private lateinit var expenseJsonObject: JSONObject
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -104,7 +104,11 @@ class ExpenseDetailsActivity : AppCompatActivity(), LoadingAction {
     }
 
     private fun fetchCategoriesCallback() {
-        fetchCategories(object : ServerCallback<JSONArray> {
+        fetchCategories(getFetchCategoriesCallback())
+    }
+
+    private fun getFetchCategoriesCallback() : ServerCallback<JSONArray> {
+        return object : ServerCallback<JSONArray> {
             override fun onSuccess(response: JSONArray) {
                 val type = object : TypeToken<List<Category>>() {}.type
                 val categories = Gson().fromJson<List<Category>>(response.toString(), type)
@@ -113,11 +117,16 @@ class ExpenseDetailsActivity : AppCompatActivity(), LoadingAction {
             }
 
             override fun onFailure(error: VolleyError) {
-                val serverError = ServerErrorResponse(error)
-                val messageError = serverError.getErrorResponse()
-                errorAction(messageError)
+                if (error.networkResponse != null && error.networkResponse.statusCode == 403) {
+                    refreshTokenCallback(0)
+                } else {
+                    val serverError = ServerErrorResponse(error)
+                    val messageError = serverError.getErrorResponse()
+                    expensesProgressBar.visibility = View.INVISIBLE
+                    errorAction(messageError)
+                }
             }
-        })
+        }
     }
 
     private fun fillCategorySpinner(categories: List<Category>) {
@@ -141,6 +150,33 @@ class ExpenseDetailsActivity : AppCompatActivity(), LoadingAction {
         }
 
         expenseDetailsCategory.setSelection(categoryIndex)
+    }
+
+    private fun refreshTokenCallback(flagRequest: Int) {
+        TokenUtils.refreshToken(object : ServerCallback<JSONObject> {
+            override fun onSuccess(response: JSONObject) {
+                SharedPreferencesUtils.storeTokens(
+                    response.get(SharedPreferencesUtils.accessTokenConst) as String,
+                    TokenUtils.refreshToken,
+                    null
+                )
+                when (flagRequest) {
+                    0 -> {
+                        fetchCategories(getFetchCategoriesCallback())
+                    }
+                    1 -> {
+                        requestDeleteExpense(getDeleteExpenseCallback())
+                    }
+                    2 -> {
+                        putExpense(getPutExpenseCallback())
+                    }
+                }
+            }
+
+            override fun onFailure(error: VolleyError) {
+                TokenUtils.refreshTokenOnFailure(error)
+            }
+        })
     }
 
     private fun fetchCategories(callback: ServerCallback<JSONArray>) {
@@ -171,7 +207,11 @@ class ExpenseDetailsActivity : AppCompatActivity(), LoadingAction {
 
     private fun deleteExpense() {
         showProgressBar()
-        requestDeleteExpense(object : ServerCallback<JSONObject> {
+        requestDeleteExpense(getDeleteExpenseCallback())
+    }
+
+    private fun getDeleteExpenseCallback() : ServerCallback<JSONObject> {
+        return object : ServerCallback<JSONObject> {
             override fun onSuccess(response: JSONObject) {
                 startExpensesActivity()
                 Toast.makeText(
@@ -181,13 +221,18 @@ class ExpenseDetailsActivity : AppCompatActivity(), LoadingAction {
             }
 
             override fun onFailure(error: VolleyError) {
-                Toast.makeText(
-                    applicationContext, "Expense deletion failed!",
-                    Toast.LENGTH_LONG
-                ).show()
-                hideProgressBar()
+                if (error.networkResponse != null && error.networkResponse.statusCode == 403) {
+                    refreshTokenCallback(1)
+                } else {
+                    Toast.makeText(
+                        applicationContext, "Expense deletion failed!",
+                        Toast.LENGTH_LONG
+                    ).show()
+                    hideProgressBar()
+                }
+
             }
-        })
+        }
     }
 
     fun startExpensesActivity() {
@@ -225,33 +270,41 @@ class ExpenseDetailsActivity : AppCompatActivity(), LoadingAction {
         val validationResult = expenseValidator.validateAddExpenseAction()
         if (validationResult.isValid) {
             val expenseDTO = ExpenseDTO(expenseFormDTO)
-            val expenseJsonObject = JSONObject(Utils.getGsonWithLocalDate().toJson(expenseDTO))
+            expenseJsonObject = JSONObject(Utils.getGsonWithLocalDate().toJson(expenseDTO))
             showProgressBar()
-            putExpenseCallback(expenseJsonObject)
+            putExpenseCallback()
         } else {
             Toast.makeText(this, validationResult.message, Toast.LENGTH_SHORT).show()
         }
     }
 
-    private fun putExpenseCallback(expenseJsonObject: JSONObject) {
-        putExpense(expenseJsonObject, object : ServerCallback<JSONObject> {
+    private fun putExpenseCallback() {
+        putExpense(getPutExpenseCallback())
+    }
+
+    private fun getPutExpenseCallback() : ServerCallback<JSONObject> {
+        return object : ServerCallback<JSONObject> {
             override fun onSuccess(response: JSONObject) {
                 hideProgressBar()
                 showToast(Messages.SUCCESSFULLY_EDITED)
             }
 
             override fun onFailure(error: VolleyError) {
-                val serverResponse = ServerErrorResponse(error)
-                val messageError = serverResponse.getErrorResponse()
-                if (messageError != null)
-                    showToast(messageError)
-                changeIconAndEditableFields(true)
-                hideProgressBar()
+                if (error.networkResponse != null && error.networkResponse.statusCode == 403) {
+                    refreshTokenCallback(2)
+                } else {
+                    val serverResponse = ServerErrorResponse(error)
+                    val messageError = serverResponse.getErrorResponse()
+                    if (messageError != null)
+                        showToast(messageError)
+                    changeIconAndEditableFields(true)
+                    hideProgressBar()
+                }
             }
-        })
+        }
     }
 
-    private fun putExpense(expenseJsonObject: JSONObject, callback: ServerCallback<JSONObject>) {
+    private fun putExpense(callback: ServerCallback<JSONObject>) {
         val url = BASE_URL + Endpoint.EXPENSES + expense.id + '/'
         VolleyService().requestObject(Request.Method.PUT, url, expenseJsonObject, callback, this)
     }

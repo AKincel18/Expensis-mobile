@@ -1,11 +1,13 @@
 package pl.polsl.expensis_mobile.utils
 
 import android.content.Context
+import android.content.Intent
 import android.widget.Toast
 import com.android.volley.Request
 import com.android.volley.VolleyError
 import com.google.gson.Gson
 import org.json.JSONObject
+import pl.polsl.expensis_mobile.activities.LoginActivity
 import pl.polsl.expensis_mobile.dto.RefreshTokenDTO
 import pl.polsl.expensis_mobile.rest.BASE_URL
 import pl.polsl.expensis_mobile.rest.Endpoint
@@ -41,6 +43,7 @@ class TokenUtils {
             println("Cannot refresh token, error:  $error")
             clearAllSharedPreferences()
             Toast.makeText(context, SESSION_EXPIRED, Toast.LENGTH_SHORT).show()
+            context.startActivity(Intent(context, LoginActivity::class.java))
         }
     }
 }

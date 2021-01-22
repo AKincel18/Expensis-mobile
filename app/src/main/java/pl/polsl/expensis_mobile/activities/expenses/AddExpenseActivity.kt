@@ -25,12 +25,16 @@ import pl.polsl.expensis_mobile.others.LoadingAction
 import pl.polsl.expensis_mobile.others.LoggedUser
 import pl.polsl.expensis_mobile.rest.*
 import pl.polsl.expensis_mobile.utils.Messages
+import pl.polsl.expensis_mobile.utils.SharedPreferencesUtils
+import pl.polsl.expensis_mobile.utils.TokenUtils
 import pl.polsl.expensis_mobile.utils.Utils
 import pl.polsl.expensis_mobile.validators.ExpenseValidator
 import java.time.LocalDate
 import java.util.*
 
 class AddExpenseActivity : AppCompatActivity(), LoadingAction {
+
+    private lateinit var expenseJsonObject: JSONObject
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -63,7 +67,11 @@ class AddExpenseActivity : AppCompatActivity(), LoadingAction {
     }
 
     private fun fetchCategoriesCallback() {
-        fetchCategories(object : ServerCallback<JSONArray> {
+        fetchCategories(getFetchCategoriesCallback())
+    }
+
+    private fun getFetchCategoriesCallback() : ServerCallback<JSONArray> {
+        return object : ServerCallback<JSONArray> {
             override fun onSuccess(response: JSONArray) {
                 val type = object : TypeToken<List<Category>>() {}.type
                 val categories = Gson().fromJson<List<Category>>(response.toString(), type)
@@ -72,13 +80,17 @@ class AddExpenseActivity : AppCompatActivity(), LoadingAction {
             }
 
             override fun onFailure(error: VolleyError) {
-                val serverError = ServerErrorResponse(error)
-                val messageError = serverError.getErrorResponse()
-                registerProgressBar.visibility = View.INVISIBLE
-                changeEditableFields(false)
-                errorAction(messageError)
+                if (error.networkResponse != null && error.networkResponse.statusCode == 403) {
+                    refreshTokenCallback(false)
+                } else {
+                    val serverError = ServerErrorResponse(error)
+                    val messageError = serverError.getErrorResponse()
+                    registerProgressBar.visibility = View.INVISIBLE
+                    changeEditableFields(false)
+                    errorAction(messageError)
+                }
             }
-        })
+        }
     }
 
     private fun errorAction(messageError: String?) {
@@ -144,18 +156,22 @@ class AddExpenseActivity : AppCompatActivity(), LoadingAction {
         val validationResult = expenseValidator.validateAddExpenseAction()
         if (validationResult.isValid) {
             val expenseDTO = ExpenseDTO(expenseFormDTO)
-            val expenseJsonObject = JSONObject(Utils.getGsonWithLocalDate().toJson(expenseDTO))
+            expenseJsonObject = JSONObject(Utils.getGsonWithLocalDate().toJson(expenseDTO))
             changeEditableFields(false)
             showProgressBar()
-            postExpenseCallback(expenseJsonObject)
+            postExpenseCallback()
         } else {
             Toast.makeText(this, validationResult.message, Toast.LENGTH_SHORT).show()
         }
     }
 
 
-    private fun postExpenseCallback(expenseJsonObject: JSONObject) {
-        postExpense(expenseJsonObject, object : ServerCallback<JSONObject> {
+    private fun postExpenseCallback() {
+        postExpense(getPostExpenseCallback())
+    }
+
+    private fun getPostExpenseCallback() : ServerCallback<JSONObject> {
+        return object : ServerCallback<JSONObject> {
             override fun onSuccess(response: JSONObject) {
                 val intent = Intent(applicationContext, ExpensesActivity::class.java)
                 startActivity(intent)
@@ -163,23 +179,50 @@ class AddExpenseActivity : AppCompatActivity(), LoadingAction {
             }
 
             override fun onFailure(error: VolleyError) {
-                val serverResponse = ServerErrorResponse(error)
-                val messageError = serverResponse.getErrorResponse()
-                if (messageError != null)
-                    showToast(messageError)
-                changeEditableFields(true)
-                registerProgressBar.visibility = View.INVISIBLE
+                if (error.networkResponse != null && error.networkResponse.statusCode == 403) {
+                    refreshTokenCallback(true)
+                } else {
+                    val serverResponse = ServerErrorResponse(error)
+                    val messageError = serverResponse.getErrorResponse()
+                    if (messageError != null)
+                        showToast(messageError)
+                    changeEditableFields(true)
+                    registerProgressBar.visibility = View.INVISIBLE
+                }
 
             }
-        })
+        }
     }
 
-    private fun postExpense(expenseJsonObject: JSONObject, callback: ServerCallback<JSONObject>) {
+    private fun postExpense(callback: ServerCallback<JSONObject>) {
         val url = BASE_URL + Endpoint.EXPENSES
         VolleyService().requestObject(Request.Method.POST, url, expenseJsonObject, callback, this)
     }
 
     private fun showToast(messageError: String?) {
         Toast.makeText(this, messageError, Toast.LENGTH_SHORT).show()
+    }
+
+    private fun refreshTokenCallback(isPostExpenseRequest: Boolean) {
+        TokenUtils.refreshToken(object : ServerCallback<JSONObject> {
+            override fun onSuccess(response: JSONObject) {
+                SharedPreferencesUtils.storeTokens(
+                    response.get(SharedPreferencesUtils.accessTokenConst) as String,
+                    TokenUtils.refreshToken,
+                    null
+                )
+
+                if (isPostExpenseRequest) {
+                    postExpense(getPostExpenseCallback())
+                }
+                else {
+                    fetchCategories(getFetchCategoriesCallback())
+                }
+            }
+
+            override fun onFailure(error: VolleyError) {
+                TokenUtils.refreshTokenOnFailure(error)
+            }
+        })
     }
 }
