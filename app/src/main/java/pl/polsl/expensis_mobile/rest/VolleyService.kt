@@ -10,7 +10,7 @@ import pl.polsl.expensis_mobile.rest.requests.CustomJsonArrayRequest
 import pl.polsl.expensis_mobile.rest.requests.CustomJsonRequest
 import pl.polsl.expensis_mobile.rest.requests.CustomStringRequest
 
-class VolleyService() {
+class VolleyService {
 
     fun requestArray(
         method: Int,

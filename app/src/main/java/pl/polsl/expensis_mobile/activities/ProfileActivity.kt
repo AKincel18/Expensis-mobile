@@ -15,6 +15,8 @@ import kotlinx.android.synthetic.main.profile_activity.*
 import org.json.JSONArray
 import org.json.JSONObject
 import pl.polsl.expensis_mobile.R
+import pl.polsl.expensis_mobile.activities.ProfileActivity.RequestType.EDIT_PROFILE
+import pl.polsl.expensis_mobile.activities.ProfileActivity.RequestType.FETCH_INCOME_RANGES
 import pl.polsl.expensis_mobile.dto.UserFormDTO
 import pl.polsl.expensis_mobile.models.IncomeRange
 import pl.polsl.expensis_mobile.models.user.UserBase
@@ -34,6 +36,11 @@ import pl.polsl.expensis_mobile.validators.UserValidator
 import java.util.*
 
 class ProfileActivity : AppCompatActivity(), LoadingAction {
+
+    private enum class RequestType {
+        EDIT_PROFILE,
+        FETCH_INCOME_RANGES
+    }
 
     private lateinit var loggedUser: LoggedUser
 
@@ -66,51 +73,60 @@ class ProfileActivity : AppCompatActivity(), LoadingAction {
 
     private fun onEditProfileButtonClicked(callback: ServerCallback<JSONObject>) {
         editButtonProfile.setOnClickListener {
-            val userFormDTO = UserFormDTO(
-                emailInput,
-                genderSpinner,
-                dateInput,
-                monthlyLimitInput,
-                incomeRangeSpinner,
-                passwordInput,
-                passwordConfirmInput,
-                allowDataCollectionCheckBox,
-                getString(R.string.monthly_limit)
-            )
+            editProfileRequest(callback)
+        }
+    }
 
-            val userValidator = UserValidator(userFormDTO)
-            val validationResult = userValidator.validateEditProfileAction()
-            if (validationResult.isValid) {
-                val userJson: String?
-                if (validationResult.extraMessage == PASSWORD_CHANGED) {
-                    val user = UserExtension()
-                    user.prepareToUpdatingExtension(userFormDTO)
-                    userJson = getGsonWithLocalDate().toJson(user)
-                } else {
-                    val user = UserBase()
-                    user.prepareToUpdatingBase(userFormDTO)
-                    userJson = getGsonWithLocalDate().toJson(user)
-                }
+    private fun editProfileRequest(callback: ServerCallback<JSONObject>) {
+        val userFormDTO = UserFormDTO(
+            emailInput,
+            genderSpinner,
+            dateInput,
+            monthlyLimitInput,
+            incomeRangeSpinner,
+            passwordInput,
+            passwordConfirmInput,
+            allowDataCollectionCheckBox,
+            getString(R.string.monthly_limit)
+        )
 
-                val url = BASE_URL + Endpoint.USERS
-                val userJsonObject = JSONObject(userJson!!)
-                changeEditableFields(false)
-                showProgressBar()
-                VolleyService().requestObject(
-                    Request.Method.PUT,
-                    url,
-                    userJsonObject,
-                    callback,
-                    this
-                )
+        val userValidator = UserValidator(userFormDTO)
+        val validationResult = userValidator.validateEditProfileAction()
+        if (validationResult.isValid) {
+            val userJson: String?
+            if (validationResult.extraMessage == PASSWORD_CHANGED) {
+                val user = UserExtension()
+                user.prepareToUpdatingExtension(userFormDTO)
+                userJson = getGsonWithLocalDate().toJson(user)
             } else {
-                showToast(validationResult.message)
+                val user = UserBase()
+                user.prepareToUpdatingBase(userFormDTO)
+                userJson = getGsonWithLocalDate().toJson(user)
             }
+
+            val url = BASE_URL + Endpoint.USERS
+            val userJsonObject = JSONObject(userJson!!)
+            changeEditableFields(false)
+            showProgressBar()
+            VolleyService().requestObject(
+                Request.Method.PUT,
+                url,
+                userJsonObject,
+                callback,
+                this
+            )
+        } else {
+            showToast(validationResult.message)
         }
     }
 
     private fun editProfileCallback() {
-        onEditProfileButtonClicked(object : ServerCallback<JSONObject> {
+        onEditProfileButtonClicked(getEditProfileCallback())
+    }
+
+    private fun getEditProfileCallback(): ServerCallback<JSONObject> {
+
+        return object : ServerCallback<JSONObject> {
             override fun onSuccess(response: JSONObject) {
                 SharedPreferencesUtils.setUser(response.toString())
                 val intent = Intent(applicationContext, MenuActivity::class.java)
@@ -119,15 +135,19 @@ class ProfileActivity : AppCompatActivity(), LoadingAction {
             }
 
             override fun onFailure(error: VolleyError) {
-                val serverResponse = ServerErrorResponse(error)
-                val messageError = serverResponse.getErrorResponse()
-                if (messageError != null)
-                    showToast(messageError)
-                changeEditableFields(true)
-                profileProgressBar.visibility = View.INVISIBLE
+                if (error.networkResponse != null && error.networkResponse.statusCode == 403) {
+                    refreshTokenCallback(EDIT_PROFILE)
+                } else {
+                    val serverResponse = ServerErrorResponse(error)
+                    val messageError = serverResponse.getErrorResponse()
+                    if (messageError != null)
+                        showToast(messageError)
+                    changeEditableFields(true)
+                    profileProgressBar.visibility = View.INVISIBLE
+                }
 
             }
-        })
+        }
     }
 
     private fun onBackButtonClicked() {
@@ -173,7 +193,11 @@ class ProfileActivity : AppCompatActivity(), LoadingAction {
     }
 
     private fun fetchIncomeRangesCallback() {
-        fetchIncomeRanges(object : ServerCallback<JSONArray> {
+        fetchIncomeRanges(getFetchIncomeRangesCallback())
+    }
+
+    private fun getFetchIncomeRangesCallback(): ServerCallback<JSONArray> {
+        return object : ServerCallback<JSONArray> {
             override fun onSuccess(response: JSONArray) {
 
                 val type = object : TypeToken<List<IncomeRange>>() {}.type
@@ -187,35 +211,18 @@ class ProfileActivity : AppCompatActivity(), LoadingAction {
             }
 
             override fun onFailure(error: VolleyError) {
-                if (error.networkResponse.statusCode == 403) {
-                    refreshTokenCallback()
+                if (error.networkResponse != null && error.networkResponse.statusCode == 403) {
+                    refreshTokenCallback(FETCH_INCOME_RANGES)
+                } else {
+                    val serverError = ServerErrorResponse(error)
+                    val messageError = serverError.getErrorResponse()
+                    profileProgressBar.visibility = View.INVISIBLE
+                    changeEditableFields(false)
+                    errorAction(messageError)
                 }
-                val serverError = ServerErrorResponse(error)
-                val messageError = serverError.getErrorResponse()
-                profileProgressBar.visibility = View.INVISIBLE
-                changeEditableFields(false)
-                errorAction(messageError)
 
             }
-        })
-    }
-
-    private fun refreshTokenCallback() {
-        TokenUtils.refreshToken(object : ServerCallback<JSONObject> {
-            override fun onSuccess(response: JSONObject) {
-                SharedPreferencesUtils.storeTokens(
-                    response.get(SharedPreferencesUtils.accessTokenConst) as String,
-                    TokenUtils.refreshToken,
-                    null
-                )
-                startActivity(Intent(applicationContext, MenuActivity::class.java))
-            }
-
-            override fun onFailure(error: VolleyError) {
-                TokenUtils.refreshTokenOnFailure(error)
-                startActivity(Intent(applicationContext, LoginActivity::class.java))
-            }
-        })
+        }
     }
 
     private fun fillIncomeRangeSpinner(incomeRanges: List<IncomeRange>) {
@@ -254,6 +261,27 @@ class ProfileActivity : AppCompatActivity(), LoadingAction {
 
     private fun showToast(message: String?) {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+    }
+
+    private fun refreshTokenCallback(requestType: RequestType) {
+        TokenUtils.refreshToken(object : ServerCallback<JSONObject> {
+            override fun onSuccess(response: JSONObject) {
+                SharedPreferencesUtils.storeTokens(
+                    response.get(SharedPreferencesUtils.accessTokenConst) as String,
+                    TokenUtils.refreshToken,
+                    null
+                )
+                if (EDIT_PROFILE == requestType) {
+                    editProfileRequest(getEditProfileCallback())
+                } else {
+                    fetchIncomeRanges(getFetchIncomeRangesCallback())
+                }
+            }
+
+            override fun onFailure(error: VolleyError) {
+                TokenUtils.refreshTokenOnFailure(error)
+            }
+        })
     }
 
     override fun showProgressBar() {

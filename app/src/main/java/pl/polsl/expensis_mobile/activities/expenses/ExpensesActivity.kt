@@ -14,8 +14,9 @@ import kotlinx.android.synthetic.main.register_activity.*
 import org.json.JSONArray
 import org.json.JSONObject
 import pl.polsl.expensis_mobile.R
-import pl.polsl.expensis_mobile.activities.LoginActivity
 import pl.polsl.expensis_mobile.activities.MenuActivity
+import pl.polsl.expensis_mobile.activities.expenses.ExpensesActivity.RequestType.FETCH_EXPENSES
+import pl.polsl.expensis_mobile.activities.expenses.ExpensesActivity.RequestType.FETCH_SUM
 import pl.polsl.expensis_mobile.adapters.ExpensesAdapter
 import pl.polsl.expensis_mobile.models.Expense
 import pl.polsl.expensis_mobile.others.LoadingAction
@@ -31,6 +32,11 @@ import java.time.LocalDateTime
 
 
 class ExpensesActivity : AppCompatActivity(), LoadingAction, NumberPicker.OnValueChangeListener {
+
+    private enum class RequestType {
+        FETCH_EXPENSES,
+        FETCH_SUM
+    }
 
     private lateinit var loggedUserDateJoined: LocalDateTime
     private val currentDate = LocalDate.now()
@@ -80,7 +86,7 @@ class ExpensesActivity : AppCompatActivity(), LoadingAction, NumberPicker.OnValu
     }
 
     override fun onValueChange(picker: NumberPicker?, oldVal: Int, newVal: Int) {
-       determineMonthBoundries(newVal)
+        determineMonthBoundries(newVal)
     }
 
     private fun determineMonthBoundries(year: Int) {
@@ -108,7 +114,11 @@ class ExpensesActivity : AppCompatActivity(), LoadingAction, NumberPicker.OnValu
     }
 
     private fun fetchExpensesCallback() {
-        fetchExpenses(object : ServerCallback<JSONArray> {
+        fetchExpenses(getFetchExpensesCallback())
+    }
+
+    private fun getFetchExpensesCallback(): ServerCallback<JSONArray> {
+        return object : ServerCallback<JSONArray> {
             override fun onSuccess(response: JSONArray) {
                 val type = object : TypeToken<List<Expense>>() {}.type
                 val expenses =
@@ -122,7 +132,7 @@ class ExpensesActivity : AppCompatActivity(), LoadingAction, NumberPicker.OnValu
 
             override fun onFailure(error: VolleyError) {
                 if (error.networkResponse != null && error.networkResponse.statusCode == 403) {
-                    refreshTokenCallback()
+                    refreshTokenCallback(FETCH_EXPENSES)
                 } else {
                     val serverError = ServerErrorResponse(error)
                     val messageError = serverError.getErrorResponse()
@@ -130,23 +140,10 @@ class ExpensesActivity : AppCompatActivity(), LoadingAction, NumberPicker.OnValu
                     handleError(messageError)
                 }
             }
-        })
+        }
     }
 
-    private fun fetchExpensesSumCallback() {
-        fetchExpensesSum(object: ServerCallback<String> {
-            @SuppressLint("SetTextI18n")
-            override fun onSuccess(response: String) {
-                expensesSumText.text = "-$response"
-            }
-
-            override fun onFailure(error: VolleyError) {
-                expensesSumText.text = "0"
-            }
-        })
-    }
-
-    private fun refreshTokenCallback() {
+    private fun refreshTokenCallback(requestType: RequestType) {
         TokenUtils.refreshToken(object : ServerCallback<JSONObject> {
             override fun onSuccess(response: JSONObject) {
                 SharedPreferencesUtils.storeTokens(
@@ -154,14 +151,41 @@ class ExpensesActivity : AppCompatActivity(), LoadingAction, NumberPicker.OnValu
                     TokenUtils.refreshToken,
                     null
                 )
-                startActivity(Intent(applicationContext, MenuActivity::class.java))
+                if (FETCH_EXPENSES == requestType) {
+                    fetchExpenses(getFetchExpensesCallback())
+                } else {
+                    fetchExpensesSum(getFetchExpensesSumCallback())
+                }
             }
 
             override fun onFailure(error: VolleyError) {
                 TokenUtils.refreshTokenOnFailure(error)
-                startActivity(Intent(applicationContext, LoginActivity::class.java))
             }
         })
+    }
+
+    private fun fetchExpensesSumCallback() {
+        fetchExpensesSum(getFetchExpensesSumCallback())
+    }
+
+    private fun getFetchExpensesSumCallback(): ServerCallback<String> {
+        return object : ServerCallback<String> {
+            @SuppressLint("SetTextI18n")
+            override fun onSuccess(response: String) {
+                expensesSumText.text = "-$response"
+            }
+
+            override fun onFailure(error: VolleyError) {
+                if (error.networkResponse != null && error.networkResponse.statusCode == 403) {
+                    refreshTokenCallback(FETCH_SUM)
+                } else {
+                    val serverError = ServerErrorResponse(error)
+                    val messageError = serverError.getErrorResponse()
+                    expensesProgressBar.visibility = View.INVISIBLE
+                    handleError(messageError)
+                }
+            }
+        }
     }
 
     private fun fetchExpenses(callback: ServerCallback<JSONArray>) {
@@ -227,7 +251,7 @@ class ExpensesActivity : AppCompatActivity(), LoadingAction, NumberPicker.OnValu
         if (yearPicker.value == currentDate.year && monthPicker.value == currentDate.monthValue) {
             dateText.text = this.resources.getString(R.string.current_month_expenses)
         } else {
-            dateText.text = monthNames[monthPicker.value-1] + " " + yearPicker.value + ": "
+            dateText.text = monthNames[monthPicker.value - 1] + " " + yearPicker.value + ": "
         }
         fetchExpensesSumCallback()
         fetchExpensesCallback()
