@@ -16,6 +16,8 @@ import kotlinx.android.synthetic.main.register_activity.*
 import org.json.JSONArray
 import org.json.JSONObject
 import pl.polsl.expensis_mobile.R
+import pl.polsl.expensis_mobile.activities.expenses.AddExpenseActivity.RequestType.FETCH_CATEGORIES
+import pl.polsl.expensis_mobile.activities.expenses.AddExpenseActivity.RequestType.POST_EXPENSE
 import pl.polsl.expensis_mobile.adapters.SpinnerAdapter
 import pl.polsl.expensis_mobile.dto.ExpenseDTO
 import pl.polsl.expensis_mobile.dto.ExpenseFormDTO
@@ -33,6 +35,11 @@ import java.time.LocalDate
 import java.util.*
 
 class AddExpenseActivity : AppCompatActivity(), LoadingAction {
+
+    private enum class RequestType {
+        FETCH_CATEGORIES,
+        POST_EXPENSE
+    }
 
     private lateinit var expenseJsonObject: JSONObject
 
@@ -70,7 +77,7 @@ class AddExpenseActivity : AppCompatActivity(), LoadingAction {
         fetchCategories(getFetchCategoriesCallback())
     }
 
-    private fun getFetchCategoriesCallback() : ServerCallback<JSONArray> {
+    private fun getFetchCategoriesCallback(): ServerCallback<JSONArray> {
         return object : ServerCallback<JSONArray> {
             override fun onSuccess(response: JSONArray) {
                 val type = object : TypeToken<List<Category>>() {}.type
@@ -81,7 +88,7 @@ class AddExpenseActivity : AppCompatActivity(), LoadingAction {
 
             override fun onFailure(error: VolleyError) {
                 if (error.networkResponse != null && error.networkResponse.statusCode == 403) {
-                    refreshTokenCallback(false)
+                    refreshTokenCallback(FETCH_CATEGORIES)
                 } else {
                     val serverError = ServerErrorResponse(error)
                     val messageError = serverError.getErrorResponse()
@@ -139,7 +146,11 @@ class AddExpenseActivity : AppCompatActivity(), LoadingAction {
 
         val loggedUserDateJoined = LoggedUser().serialize()!!.dateJoined
         val firstDayOfRegisteredMonth = Calendar.getInstance()
-        firstDayOfRegisteredMonth.set(loggedUserDateJoined.year, loggedUserDateJoined.monthValue-1, 1)
+        firstDayOfRegisteredMonth.set(
+            loggedUserDateJoined.year,
+            loggedUserDateJoined.monthValue - 1,
+            1
+        )
         dialog.datePicker.minDate = firstDayOfRegisteredMonth.timeInMillis
         dialog.show()
     }
@@ -170,7 +181,7 @@ class AddExpenseActivity : AppCompatActivity(), LoadingAction {
         postExpense(getPostExpenseCallback())
     }
 
-    private fun getPostExpenseCallback() : ServerCallback<JSONObject> {
+    private fun getPostExpenseCallback(): ServerCallback<JSONObject> {
         return object : ServerCallback<JSONObject> {
             override fun onSuccess(response: JSONObject) {
                 val intent = Intent(applicationContext, ExpensesActivity::class.java)
@@ -180,7 +191,7 @@ class AddExpenseActivity : AppCompatActivity(), LoadingAction {
 
             override fun onFailure(error: VolleyError) {
                 if (error.networkResponse != null && error.networkResponse.statusCode == 403) {
-                    refreshTokenCallback(true)
+                    refreshTokenCallback(POST_EXPENSE)
                 } else {
                     val serverResponse = ServerErrorResponse(error)
                     val messageError = serverResponse.getErrorResponse()
@@ -203,7 +214,7 @@ class AddExpenseActivity : AppCompatActivity(), LoadingAction {
         Toast.makeText(this, messageError, Toast.LENGTH_SHORT).show()
     }
 
-    private fun refreshTokenCallback(isPostExpenseRequest: Boolean) {
+    private fun refreshTokenCallback(requestType: RequestType) {
         TokenUtils.refreshToken(object : ServerCallback<JSONObject> {
             override fun onSuccess(response: JSONObject) {
                 SharedPreferencesUtils.storeTokens(
@@ -212,10 +223,9 @@ class AddExpenseActivity : AppCompatActivity(), LoadingAction {
                     null
                 )
 
-                if (isPostExpenseRequest) {
+                if (POST_EXPENSE == requestType) {
                     postExpense(getPostExpenseCallback())
-                }
-                else {
+                } else {
                     fetchCategories(getFetchCategoriesCallback())
                 }
             }

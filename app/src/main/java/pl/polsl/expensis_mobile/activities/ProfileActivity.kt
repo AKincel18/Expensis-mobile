@@ -15,6 +15,8 @@ import kotlinx.android.synthetic.main.profile_activity.*
 import org.json.JSONArray
 import org.json.JSONObject
 import pl.polsl.expensis_mobile.R
+import pl.polsl.expensis_mobile.activities.ProfileActivity.RequestType.EDIT_PROFILE
+import pl.polsl.expensis_mobile.activities.ProfileActivity.RequestType.FETCH_INCOME_RANGES
 import pl.polsl.expensis_mobile.dto.UserFormDTO
 import pl.polsl.expensis_mobile.models.IncomeRange
 import pl.polsl.expensis_mobile.models.user.UserBase
@@ -34,6 +36,11 @@ import pl.polsl.expensis_mobile.validators.UserValidator
 import java.util.*
 
 class ProfileActivity : AppCompatActivity(), LoadingAction {
+
+    private enum class RequestType {
+        EDIT_PROFILE,
+        FETCH_INCOME_RANGES
+    }
 
     private lateinit var loggedUser: LoggedUser
 
@@ -117,7 +124,7 @@ class ProfileActivity : AppCompatActivity(), LoadingAction {
         onEditProfileButtonClicked(getEditProfileCallback())
     }
 
-    private fun getEditProfileCallback() : ServerCallback<JSONObject>{
+    private fun getEditProfileCallback(): ServerCallback<JSONObject> {
 
         return object : ServerCallback<JSONObject> {
             override fun onSuccess(response: JSONObject) {
@@ -129,9 +136,8 @@ class ProfileActivity : AppCompatActivity(), LoadingAction {
 
             override fun onFailure(error: VolleyError) {
                 if (error.networkResponse != null && error.networkResponse.statusCode == 403) {
-                    refreshTokenCallback(true)
-                }
-                else {
+                    refreshTokenCallback(EDIT_PROFILE)
+                } else {
                     val serverResponse = ServerErrorResponse(error)
                     val messageError = serverResponse.getErrorResponse()
                     if (messageError != null)
@@ -190,7 +196,7 @@ class ProfileActivity : AppCompatActivity(), LoadingAction {
         fetchIncomeRanges(getFetchIncomeRangesCallback())
     }
 
-    private fun getFetchIncomeRangesCallback() : ServerCallback<JSONArray> {
+    private fun getFetchIncomeRangesCallback(): ServerCallback<JSONArray> {
         return object : ServerCallback<JSONArray> {
             override fun onSuccess(response: JSONArray) {
 
@@ -206,9 +212,8 @@ class ProfileActivity : AppCompatActivity(), LoadingAction {
 
             override fun onFailure(error: VolleyError) {
                 if (error.networkResponse != null && error.networkResponse.statusCode == 403) {
-                    refreshTokenCallback(false)
-                }
-                else {
+                    refreshTokenCallback(FETCH_INCOME_RANGES)
+                } else {
                     val serverError = ServerErrorResponse(error)
                     val messageError = serverError.getErrorResponse()
                     profileProgressBar.visibility = View.INVISIBLE
@@ -219,6 +224,7 @@ class ProfileActivity : AppCompatActivity(), LoadingAction {
             }
         }
     }
+
     private fun fillIncomeRangeSpinner(incomeRanges: List<IncomeRange>) {
         val items = incomeRanges.toMutableList()
 
@@ -257,7 +263,7 @@ class ProfileActivity : AppCompatActivity(), LoadingAction {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
     }
 
-    private fun refreshTokenCallback(isEditProfileRequest: Boolean) {
+    private fun refreshTokenCallback(requestType: RequestType) {
         TokenUtils.refreshToken(object : ServerCallback<JSONObject> {
             override fun onSuccess(response: JSONObject) {
                 SharedPreferencesUtils.storeTokens(
@@ -265,10 +271,9 @@ class ProfileActivity : AppCompatActivity(), LoadingAction {
                     TokenUtils.refreshToken,
                     null
                 )
-                if (isEditProfileRequest) {
+                if (EDIT_PROFILE == requestType) {
                     editProfileRequest(getEditProfileCallback())
-                }
-                else {
+                } else {
                     fetchIncomeRanges(getFetchIncomeRangesCallback())
                 }
             }
