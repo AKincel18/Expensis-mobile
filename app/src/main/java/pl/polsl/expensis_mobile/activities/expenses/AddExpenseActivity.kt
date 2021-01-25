@@ -135,7 +135,7 @@ class AddExpenseActivity : AppCompatActivity(), LoadingAction {
         val dateNow = Calendar.getInstance()
         val dialog = DatePickerDialog(
             this,
-            R.style.Theme_Expensismobile,
+            R.style.CalendarTheme,
             dateSetListener,
             dateNow.get(Calendar.YEAR),
             dateNow.get(Calendar.MONTH),

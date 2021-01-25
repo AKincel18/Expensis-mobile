@@ -167,7 +167,7 @@ class ProfileActivity : AppCompatActivity(), LoadingAction {
         dateInput.setOnClickListener {
             val dialog = DatePickerDialog(
                 this,
-                R.style.Theme_Expensismobile,
+                R.style.CalendarTheme,
                 dateSetListener,
                 loggedUser.birthDate.year,
                 loggedUser.birthDate.monthValue - 1,

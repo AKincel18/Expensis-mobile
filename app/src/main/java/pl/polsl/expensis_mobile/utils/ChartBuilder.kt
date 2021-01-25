@@ -72,7 +72,8 @@ class ChartBuilder(private val context: Context, private val chart: BarChart,
         var userValue = 0.0f
         var iterator = 0.5f
         for (statsResponseDTO in statsResponseDTOS) {
-            userValue = statsResponseDTO.userValue
+            if (statsResponseDTO.userValue != 0.0f)
+                userValue = statsResponseDTO.userValue
             allDataEntries.add(BarEntry(iterator, statsResponseDTO.allValue))
             barNames.add(statsResponseDTO.nameValue)
             iterator += 1f
