@@ -61,6 +61,8 @@ class StatsActivity : AppCompatActivity(), LoadingAction {
                     IntentKeys.DATA_NAME,
                     (statsNameSpinner.selectedItem as StatsName).ordinal
                 )
+                statsProgressBar.visibility = View.INVISIBLE
+                changeEditableFields(true)
                 startActivity(intent)
             }
 
