@@ -2,7 +2,7 @@
 
 Expensis is open-source project created to control Your finances.  
 This repository mobile client - created using Android studio and Kotlin language.  
-Server application and its documentation is available [*here*](https://github.com/PKapski/Expensis-server).
+Server application and its documentation is available [*here*](https://github.com/AKincel18/Expensis-server).
 
 ## Example application pages  
 ![Login page](app/src/main/res/drawable/login_page.png "Login page.")  
